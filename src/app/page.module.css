@@ -1,0 +1,20 @@
+.line {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 33.33333%;
+  /* background-color: #fff; */
+  width: 0px;
+  height: 100%;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.line:nth-child(2) {
+  left: 66.66666%;
+}
+
+@media screen and (max-width: 640px) {
+  .line {
+    display: none;
+  }
+}
