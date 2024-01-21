@@ -1,4 +1,23 @@
-.line {
+.app {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.line33,
+.line66 {
   content: "";
   position: absolute;
   top: 0;
@@ -9,12 +28,13 @@
   border-left: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.line:nth-child(2) {
+.line66 {
   left: 66.66666%;
 }
 
 @media screen and (max-width: 640px) {
-  .line {
+  .line33,
+  .line66 {
     display: none;
   }
 }

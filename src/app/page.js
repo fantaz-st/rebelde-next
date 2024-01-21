@@ -6,8 +6,11 @@ export default function Home() {
   return (
     <div className='app'>
       <Header />
-      <div className={classes.line} />
-      <div className={classes.line} />
+      <div className={classes.loading}>
+        <h1>Loading content...</h1>
+      </div>
+      <div className={classes.line33} />
+      <div className={classes.line66} />
       <Slider />
     </div>
   );

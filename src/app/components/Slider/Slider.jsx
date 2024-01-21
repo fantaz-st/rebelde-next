@@ -14,7 +14,7 @@ import slides from "@/app/helpers/slides";
 
 import suspenseImg from "../../assets/suspense.png";
 
-const Mesh = ({ captionRef, indexRef, transitionRef }) => {
+const Mesh = ({ captionRef, indexRef, transitionRef, footerRef }) => {
   const viewport = useThree((state) => state.viewport);
   const size = useAspect(viewport.width, viewport.height);
 
@@ -26,7 +26,7 @@ const Mesh = ({ captionRef, indexRef, transitionRef }) => {
 
   const transparentPixelTexture = useLoader(TextureLoader, transparentPixelSrc.src);
 
-  const transition = () => {
+  const transition = (first = "lol") => {
     if (!materialRef.current) return;
     if (isTransitioningRef.current) return;
 
@@ -37,6 +37,18 @@ const Mesh = ({ captionRef, indexRef, transitionRef }) => {
 
     let ctx = gsap.context(() => {
       const tl = gsap.timeline({
+        onStart: () => {
+          if (first === "first") {
+            console.log("idem");
+            gsap.from(footerRef.current, {
+              y: "100%",
+              opacity: 0,
+              duration: 1,
+              delay: 1,
+              ease: "power2.out",
+            });
+          }
+        },
         onUpdate: () => {
           materialRef.current.uniforms.uTransitionProgress.value = tl.progress();
         },
@@ -61,6 +73,7 @@ const Mesh = ({ captionRef, indexRef, transitionRef }) => {
         duration: 0.8,
         ease: "power2.out",
       })
+
         .to(captionRef.current.children, {
           delay: -1,
           opacity: 0,
@@ -84,7 +97,7 @@ const Mesh = ({ captionRef, indexRef, transitionRef }) => {
   transitionRef.current = transition;
 
   useEffect(() => {
-    transition();
+    transition("first");
   }, []);
 
   const uniforms = useMemo(
@@ -114,6 +127,7 @@ const Mesh = ({ captionRef, indexRef, transitionRef }) => {
 const Slider = () => {
   const captionRef = useRef();
   const indexRef = useRef();
+  const footerRef = useRef();
 
   const transitionRef = useRef(null);
 
@@ -134,7 +148,7 @@ const Slider = () => {
       <div className={classes.caption}>
         <h1 ref={captionRef}></h1>
       </div>
-      <div className={classes.slideFooter}>
+      <div className={classes.slideFooter} ref={footerRef}>
         <div className={classes.controls}>
           <div className={classes.slideIndex}>
             <p>
@@ -151,7 +165,7 @@ const Slider = () => {
         </div>
       </div>
       <Canvas>
-        <Mesh captionRef={captionRef} indexRef={indexRef} transitionRef={transitionRef} />
+        <Mesh captionRef={captionRef} indexRef={indexRef} transitionRef={transitionRef} footerRef={footerRef} />
       </Canvas>
     </div>
   );
