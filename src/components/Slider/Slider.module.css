@@ -18,6 +18,8 @@
   align-content: stretch;
   height: 80px;
   z-index: 2;
+  opacity: 0; /* gsap fuoc*/
+  transform: translateY(-100%); /* gsap fuoc*/
 }
 
 .button {
@@ -79,12 +81,15 @@
 
 .slideFooter {
   position: absolute;
-  bottom: 0;
+  bottom: 0%;
   left: 0;
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   width: 100%;
+
+  opacity: 0; /* gsap fuoc*/
+  transform: translateY(100%); /* gsap fuoc*/
 }
 
 .controls {

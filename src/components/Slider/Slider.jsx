@@ -39,17 +39,16 @@ const Mesh = ({ captionRef, indexRef, transitionRef, headerRef, footerRef }) => 
       const tl = gsap.timeline({
         onStart: () => {
           if (first === "first") {
-            console.log("idem");
-            gsap.from(headerRef.current, {
-              y: "-100%",
-              opacity: 0,
+            gsap.to(headerRef.current, {
+              y: "0%",
               duration: 1,
               delay: 1,
+              opacity: 1,
               ease: "power2.out",
             });
-            gsap.from(footerRef.current, {
-              y: "100%",
-              opacity: 0,
+            gsap.to(footerRef.current, {
+              y: "0%",
+              opacity: 1,
               duration: 1,
               delay: 1,
               ease: "power2.out",
