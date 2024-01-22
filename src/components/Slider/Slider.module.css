@@ -7,6 +7,76 @@
   z-index: -1;
 }
 
+.header {
+  position: relative;
+  padding: 1rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  align-content: stretch;
+  height: 80px;
+  z-index: 2;
+}
+
+.button {
+  color: #fff;
+  font-weight: 500;
+  background-color: #0755dd;
+  padding: 0 0.75rem;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  /* transition: all 0.2s ease-in-out; */
+}
+
+.button p {
+  z-index: 2;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+
+.button:hover {
+  /* background-color: #fff; */
+  color: #0755dd;
+}
+
+.button:before {
+  background: #fff;
+  content: "";
+  inset: 0;
+  position: absolute;
+  left: -25%;
+  top: -40%;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.35s ease-in-out;
+  z-index: 0;
+  border-radius: 100%;
+  height: 340%;
+  width: 150%;
+}
+
+.button:hover::before {
+  transform: scaleY(1);
+  transform-origin: bottom;
+}
+
+.logo h2 {
+  color: #fff;
+}
+
+.logo h2 span {
+  display: inline-block;
+
+  -webkit-transform: matrix(-1, 0, 0, 1, 0, 0);
+  -moz-transform: matrix(-1, 0, 0, 1, 0, 0);
+  -o-transform: matrix(-1, 0, 0, 1, 0, 0);
+  transform: matrix(-1, 0, 0, 1, 0, 0);
+}
+
 .slideFooter {
   position: absolute;
   bottom: 0;
@@ -114,7 +184,6 @@
   }
   .caption {
     max-width: 100vw;
-    top: 70%;
   }
   .caption h1 {
     font-size: 3rem;

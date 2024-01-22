@@ -1,13 +1,13 @@
-import Header from "../components/Header/Header";
+// import Header from "../components/Header/Header";
 import Slider from "../components/Slider/Slider";
 import classes from "./page.module.css";
 
 export default function Home() {
   return (
     <div className='app'>
-      <Header />
+      {/* <Header /> */}
       <div className={classes.loading}>
-        <h1>Loading content...</h1>
+        <h1>Loading videos...</h1>
       </div>
       <div className={classes.line33} />
       <div className={classes.line66} />

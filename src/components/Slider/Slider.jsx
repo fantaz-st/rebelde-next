@@ -14,7 +14,7 @@ import slides from "@/helpers/slides";
 
 import suspenseImg from "../../assets/suspense.png";
 
-const Mesh = ({ captionRef, indexRef, transitionRef, footerRef }) => {
+const Mesh = ({ captionRef, indexRef, transitionRef, headerRef, footerRef }) => {
   const viewport = useThree((state) => state.viewport);
   const size = useAspect(viewport.width, viewport.height);
 
@@ -40,6 +40,13 @@ const Mesh = ({ captionRef, indexRef, transitionRef, footerRef }) => {
         onStart: () => {
           if (first === "first") {
             console.log("idem");
+            gsap.from(headerRef.current, {
+              y: "-100%",
+              opacity: 0,
+              duration: 1,
+              delay: 1,
+              ease: "power2.out",
+            });
             gsap.from(footerRef.current, {
               y: "100%",
               opacity: 0,
@@ -127,6 +134,7 @@ const Mesh = ({ captionRef, indexRef, transitionRef, footerRef }) => {
 const Slider = () => {
   const captionRef = useRef();
   const indexRef = useRef();
+  const headerRef = useRef();
   const footerRef = useRef();
 
   const transitionRef = useRef(null);
@@ -145,6 +153,16 @@ const Slider = () => {
 
   return (
     <div className={classes.container}>
+      <div className={classes.header} ref={headerRef}>
+        <div className={classes.logo}>
+          <h2>
+            <span>R</span>BD
+          </h2>
+        </div>
+        <div className={classes.button}>
+          <p>Contact us</p>
+        </div>
+      </div>
       <div className={classes.caption}>
         <h1 ref={captionRef}></h1>
       </div>
@@ -164,8 +182,8 @@ const Slider = () => {
           </div>
         </div>
       </div>
-      <Canvas>
-        <Mesh captionRef={captionRef} indexRef={indexRef} transitionRef={transitionRef} footerRef={footerRef} />
+      <Canvas style={{ position: "absolute", top: 0, left: 0 }}>
+        <Mesh captionRef={captionRef} indexRef={indexRef} transitionRef={transitionRef} headerRef={headerRef} footerRef={footerRef} />
       </Canvas>
     </div>
   );
