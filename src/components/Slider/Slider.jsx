@@ -8,9 +8,9 @@ import { Suspense, useEffect, useRef, useMemo } from "react";
 
 import transparentPixelSrc from "../../assets/transparent-pixel.png";
 import FallbackMaterial from "../FallbackMaterial/FallbackMaterial";
-import customVideoShader from "@/app/helpers/shaders";
+import customVideoShader from "@/helpers/shaders";
 import classes from "./Slider.module.css";
-import slides from "@/app/helpers/slides";
+import slides from "@/helpers/slides";
 
 import suspenseImg from "../../assets/suspense.png";
 

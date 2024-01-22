@@ -1,5 +1,5 @@
-import Header from "./components/Header/Header";
-import Slider from "./components/Slider/Slider";
+import Header from "../components/Header/Header";
+import Slider from "../components/Slider/Slider";
 import classes from "./page.module.css";
 
 export default function Home() {
