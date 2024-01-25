@@ -32,6 +32,25 @@
   left: 66.66666%;
 }
 
+.menu_overlay {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  content: "";
+  background-color: #000;
+  opacity: 0;
+  transition: opacity 0.75s cubic-bezier(0.33, 1, 0.68, 1);
+  pointer-events: none;
+}
+
+.menu_overlay.active {
+  opacity: 0.75;
+  pointer-events: all;
+}
+
 @media screen and (max-width: 640px) {
   .line33,
   .line66 {

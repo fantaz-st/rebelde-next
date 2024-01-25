@@ -129,11 +129,9 @@ const Mesh = ({ captionRef, indexRef, transitionRef, headerRef, footerRef }) => 
   );
 };
 
-const Slider = () => {
-  const [activeMenu, setActiveMenu] = useState(false);
+const Slider = ({ headerRef }) => {
   const captionRef = useRef();
   const indexRef = useRef();
-  const headerRef = useRef();
   const footerRef = useRef();
 
   const transitionRef = useRef(null);
@@ -150,37 +148,8 @@ const Slider = () => {
     }
   };
 
-  const toggleActiveMenu = () => {
-    setActiveMenu((prev) => !prev);
-  };
-
   return (
     <div className={classes.container}>
-      <div className={activeMenu ? `${classes.menu} ${classes.active}` : classes.menu}>
-        {slides.map((item, i) => (
-          <div className={classes.menu_item} key={i}>
-            <h2>{item.caption}</h2>
-            <Image src={item.poster} alt={item.caption} fill style={{ objectFit: "cover" }} />
-          </div>
-        ))}
-      </div>
-      <div className={classes.header} ref={headerRef}>
-        <div className={classes.column}>
-          <div className={classes.logo}>
-            <h2>
-              <span>R</span>BD
-            </h2>
-          </div>
-          <div className={classes.menu_button} onClick={() => toggleActiveMenu()}>
-            <span />
-            <span />
-            <span />
-          </div>
-        </div>
-        <div className={classes.button}>
-          <p>Contact us</p>
-        </div>
-      </div>
       <div className={classes.caption}>
         <h1 ref={captionRef}></h1>
       </div>
