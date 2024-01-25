@@ -2,18 +2,25 @@
 import slide2VideoSrc from "../videos/boat2.mp4";
 import slide3VideoSrc from "../videos/boat3.mp4"; */
 
+import poster1 from "../img/cave.png";
+import poster2 from "../img/lagoon.png";
+import poster3 from "../img/private.png";
+
 const slides = [
   {
     src: "/videos/blue-cave.mp4",
     caption: "Blue cave and 5 islands",
+    poster: poster1,
   },
   {
     src: "/videos/blue-lagoon.mp4",
     caption: "Blue lagoon and the shipwreck",
+    poster: poster2,
   },
   {
     src: "/videos/private.mp4",
     caption: "Luxurious private boat tour",
+    poster: poster3,
   },
 ];
 

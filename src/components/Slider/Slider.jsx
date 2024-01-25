@@ -4,7 +4,7 @@ import gsap from "gsap";
 import { TextureLoader } from "three";
 import { Canvas, useLoader, useThree } from "@react-three/fiber";
 import { useAspect, useVideoTexture } from "@react-three/drei";
-import { Suspense, useEffect, useRef, useMemo } from "react";
+import { Suspense, useEffect, useRef, useMemo, useState } from "react";
 
 import transparentPixelSrc from "../../assets/transparent-pixel.png";
 import FallbackMaterial from "../FallbackMaterial/FallbackMaterial";
@@ -13,6 +13,7 @@ import classes from "./Slider.module.css";
 import slides from "@/helpers/slides";
 
 import suspenseImg from "../../assets/suspense.png";
+import Image from "next/image";
 
 const Mesh = ({ captionRef, indexRef, transitionRef, headerRef, footerRef }) => {
   const viewport = useThree((state) => state.viewport);
@@ -91,8 +92,6 @@ const Mesh = ({ captionRef, indexRef, transitionRef, headerRef, footerRef }) => 
           ease: "power2.out",
           onComplete: () => {
             indexRef.current.textContent = `0${slideIndexRef.current + 1}`;
-            // gsap.from(indexRef.current, { y: "100%", opacity: 0, duration: 1, ease: "power2.out" });
-            // gsap.set(indexRef.current, { y: "0%" });
           },
         });
     }, materialRef);
@@ -131,6 +130,7 @@ const Mesh = ({ captionRef, indexRef, transitionRef, headerRef, footerRef }) => 
 };
 
 const Slider = () => {
+  const [activeMenu, setActiveMenu] = useState(false);
   const captionRef = useRef();
   const indexRef = useRef();
   const headerRef = useRef();
@@ -150,13 +150,32 @@ const Slider = () => {
     }
   };
 
+  const toggleActiveMenu = () => {
+    setActiveMenu((prev) => !prev);
+  };
+
   return (
     <div className={classes.container}>
+      <div className={activeMenu ? `${classes.menu} ${classes.active}` : classes.menu}>
+        {slides.map((item, i) => (
+          <div className={classes.menu_item} key={i}>
+            <h2>{item.caption}</h2>
+            <Image src={item.poster} alt={item.caption} fill style={{ objectFit: "cover" }} />
+          </div>
+        ))}
+      </div>
       <div className={classes.header} ref={headerRef}>
-        <div className={classes.logo}>
-          <h2>
-            <span>R</span>BD
-          </h2>
+        <div className={classes.column}>
+          <div className={classes.logo}>
+            <h2>
+              <span>R</span>BD
+            </h2>
+          </div>
+          <div className={classes.menu_button} onClick={() => toggleActiveMenu()}>
+            <span />
+            <span />
+            <span />
+          </div>
         </div>
         <div className={classes.button}>
           <p>Contact us</p>
