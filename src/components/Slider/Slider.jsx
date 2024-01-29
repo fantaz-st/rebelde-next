@@ -1,10 +1,9 @@
-"use client";
-
 import gsap from "gsap";
+import { SliderContext } from "@/context/slider-context";
 import { TextureLoader } from "three";
 import { Canvas, useLoader, useThree } from "@react-three/fiber";
 import { useAspect, useVideoTexture } from "@react-three/drei";
-import { Suspense, useEffect, useRef, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useContext } from "react";
 
 import transparentPixelSrc from "../../assets/transparent-pixel.png";
 import FallbackMaterial from "../FallbackMaterial/FallbackMaterial";
@@ -13,17 +12,16 @@ import classes from "./Slider.module.css";
 import slides from "@/helpers/slides";
 
 import suspenseImg from "../../assets/suspense.png";
-import Image from "next/image";
 
-const Mesh = ({ captionRef, indexRef, transitionRef, headerRef, footerRef }) => {
+const Mesh = () => {
   const viewport = useThree((state) => state.viewport);
   const size = useAspect(viewport.width, viewport.height);
 
-  const materialRef = useRef();
-  const textures = [useVideoTexture(slides[0].src), useVideoTexture(slides[1].src), useVideoTexture(slides[2].src)];
+  const ctx = useContext(SliderContext);
 
-  const slideIndexRef = useRef(0);
-  const isTransitioningRef = useRef(false);
+  const { headerRef, captionRef, footerRef, transitionRef, indexRef, materialRef, slideIndexRef, isTransitioningRef } = ctx;
+
+  const textures = [useVideoTexture(slides[0].src), useVideoTexture(slides[1].src), useVideoTexture(slides[2].src)];
 
   const transparentPixelTexture = useLoader(TextureLoader, transparentPixelSrc.src);
 
@@ -130,78 +128,15 @@ const Mesh = ({ captionRef, indexRef, transitionRef, headerRef, footerRef }) => 
 };
 
 const Slider = () => {
-  const [activeMenu, setActiveMenu] = useState(false);
-  const captionRef = useRef();
-  const indexRef = useRef();
-  const headerRef = useRef();
-  const footerRef = useRef();
-
-  const transitionRef = useRef(null);
-
-  const nextSlide = () => {
-    if (transitionRef.current) {
-      transitionRef.current();
-    }
-  };
-
-  const prevSlide = () => {
-    if (transitionRef.current) {
-      transitionRef.current();
-    }
-  };
-
-  const toggleActiveMenu = () => {
-    setActiveMenu((prev) => !prev);
-  };
-
+  const ctx = useContext(SliderContext);
   return (
     <div className={classes.container}>
-      <div className={activeMenu ? `${classes.menu} ${classes.active}` : classes.menu}>
-        {slides.map((item, i) => (
-          <div className={classes.menu_item} key={i}>
-            <h2>{item.caption}</h2>
-            <Image src={item.poster} alt={item.caption} fill style={{ objectFit: "cover" }} />
-          </div>
-        ))}
-      </div>
-      <div className={classes.header} ref={headerRef}>
-        <div className={classes.column}>
-          <div className={classes.logo}>
-            <h2>
-              <span>R</span>BD
-            </h2>
-          </div>
-          <div className={classes.menu_button} onClick={() => toggleActiveMenu()}>
-            <span />
-            <span />
-            <span />
-          </div>
-        </div>
-        <div className={classes.button}>
-          <p>Contact us</p>
-        </div>
-      </div>
       <div className={classes.caption}>
-        <h1 ref={captionRef}></h1>
+        <h1 ref={ctx.captionRef} />
       </div>
-      <div className={classes.slideFooter} ref={footerRef}>
-        <div className={classes.controls}>
-          <div className={classes.slideIndex}>
-            <p>
-              <span ref={indexRef} className={classes.index}>
-                01
-              </span>
-              <span className={classes.separator}>|</span> 0{slides.length}
-            </p>
-          </div>
-          <div className={classes.buttons}>
-            <div className={classes.previous} onClick={prevSlide}></div>
-            <div className={classes.next} onClick={nextSlide}></div>
-          </div>
-        </div>
-      </div>
+
       <Canvas style={{ position: "absolute", top: 0, left: 0 }}>
-        <Mesh captionRef={captionRef} indexRef={indexRef} transitionRef={transitionRef} headerRef={headerRef} footerRef={footerRef} />
+        <Mesh />
       </Canvas>
     </div>
   );
