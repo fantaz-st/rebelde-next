@@ -7,37 +7,9 @@
   justify-content: space-between;
   align-items: center;
   align-content: stretch;
-  height: 80px;
+  /* height: 80px; */
   opacity: 0; /* gsap fuoc*/
   transform: translateY(-100%); /* gsap fuoc*/
-}
-
-.column {
-  width: 33.3333%;
-  position: relative;
-}
-
-.menu_button {
-  margin-right: 1rem;
-  display: block;
-  cursor: pointer;
-  position: absolute;
-  z-index: 9;
-  right: 0;
-  top: 0;
-}
-
-.menu_button:hover span {
-  background-color: rgba(255, 255, 255, 1);
-}
-
-.menu_button span {
-  display: block;
-  content: "";
-  height: 2px;
-  width: 32px;
-  margin-bottom: 8px;
-  background-color: rgba(255, 255, 255, 0.7);
 }
 
 .button {
@@ -101,5 +73,8 @@
 @media screen and (max-width: 640px) {
   .header {
     padding: 0.5rem;
+  }
+  .button {
+    display: none;
   }
 }

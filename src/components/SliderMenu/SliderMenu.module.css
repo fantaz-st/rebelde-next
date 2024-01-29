@@ -1,17 +1,29 @@
 .menu.active .menu_item {
   clip-path: inset(0 0 0 0);
+  pointer-events: all;
 }
 
-.menu {
+.container {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
+  width: 100%;
   z-index: 1;
+  width: 33.3333%;
+
+  /* display: none; */
+}
+
+.menu {
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  content: "";
-  width: 33.3333%;
+  pointer-events: none;
 }
 
 .menu_item {
@@ -49,8 +61,148 @@
   transform: rotate(5deg) scale(1.1);
 }
 
+.ham {
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 400ms;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  z-index: 3;
+}
+
+.line {
+  fill: none;
+  transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
+  stroke: #fff;
+  stroke-width: 3.5;
+  stroke-linecap: square;
+}
+.ham6 .top {
+  stroke-dasharray: 40 172;
+}
+.ham6 .middle {
+  stroke-dasharray: 40 111;
+}
+.ham6 .bottom {
+  stroke-dasharray: 40 172;
+}
+.ham6.active .top {
+  stroke-dashoffset: -132px;
+}
+.ham6.active .middle {
+  stroke-dashoffset: -71px;
+}
+.ham6.active .bottom {
+  stroke-dashoffset: -132px;
+}
+
+.slideFooter {
+  position: absolute;
+  bottom: 0%;
+  left: 0;
+  z-index: 0;
+  width: 100%;
+  opacity: 0; /* gsap fuoc*/
+  transform: translateY(100%); /* gsap fuoc*/
+}
+
+.controls {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  align-content: stretch;
+  padding: 1rem 2rem;
+}
+
+.controls .slideIndex p {
+  color: #fff;
+  font-weight: 300;
+  font-size: 0.8rem;
+}
+.controls .slideIndex .separator {
+  margin: 0 0.8rem;
+  font-size: 1.5rem;
+}
+.controls .buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.controls .buttons .previous,
+.controls .buttons .next {
+  display: inline-block;
+  cursor: pointer;
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.8);
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+
+.controls .buttons .previous:hover,
+.controls .buttons .next:hover {
+  border: 2px solid rgba(255, 255, 255, 1);
+  color: rgba(255, 255, 255, 1);
+}
+
+.controls .buttons .previous:hover:after,
+.controls .buttons .next:hover:after {
+  border-color: rgba(255, 255, 255, 1);
+  color: rgba(255, 255, 255, 1);
+}
+
+.next:after,
+.previous:after {
+  position: absolute;
+  content: "";
+  height: 8px;
+  width: 8px;
+  display: inline-block;
+  border-top: 2px solid rgba(255, 255, 255, 0.6);
+  border-right: 2px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease-in-out;
+}
+
+.next:after {
+  transform: rotate(45deg) translate(-50%);
+  left: calc(50% - 2px);
+  top: calc(50% - 2px);
+}
+.previous:after {
+  transform: rotate(-135deg) translate(-50%);
+  left: calc(50% - 4px);
+  top: calc(50% - 8px);
+}
+
+.menu_overlay {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  content: "";
+  background-color: #000;
+  opacity: 0;
+  transition: opacity 0.75s cubic-bezier(0.33, 1, 0.68, 1);
+  pointer-events: none;
+}
+
+.menu_overlay.active {
+  opacity: 0.55;
+  pointer-events: all;
+}
+
 @media screen and (max-width: 640px) {
-  .menu {
+  .container {
     width: 100%;
   }
 }
