@@ -41,7 +41,7 @@
   height: 100%;
   width: 100%;
   content: "";
-  background-color: #000;
+  background-color: #111a31;
   clip-path: inset(0 0 100% 0);
   transition: all 0.3s ease-in-out;
 }
@@ -88,46 +88,58 @@
   transform: rotate(5deg) scale(1.1);
 }
 
-.ham {
+.menuButton {
   position: absolute;
   right: 0;
   top: 8px;
   cursor: pointer;
+  user-select: none;
+  z-index: 3;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: stretch;
   -webkit-tap-highlight-color: transparent;
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
-  user-select: none;
-  z-index: 3;
+}
 
+.menuButton {
+  color: #fff;
+}
+
+.hamburger {
   /* transition: transform 400ms; */
   opacity: 0; /* gsap fuoc*/
   transform: translateY(-100%); /* gsap fuoc*/
 }
 
-.line {
+.hamburger .line {
   fill: none;
-  transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
+  transition: stroke-dasharray 1s, stroke-dashoffset 1s;
   stroke: #fff;
   stroke-width: 3.5;
   stroke-linecap: square;
 }
-.ham6 .top {
+.hamburger .top {
   stroke-dasharray: 40 172;
 }
-.ham6 .middle {
+.hamburger .middle {
   stroke-dasharray: 40 111;
 }
-.ham6 .bottom {
+.hamburger .bottom {
   stroke-dasharray: 40 172;
 }
-.ham6.active .top {
+.hamburger.active .top {
   stroke-dashoffset: -132px;
 }
-.ham6.active .middle {
+.hamburger.active .middle {
   stroke-dashoffset: -71px;
 }
-.ham6.active .bottom {
+.hamburger.active .bottom {
   stroke-dashoffset: -132px;
 }
 
@@ -235,5 +247,8 @@
 @media screen and (max-width: 640px) {
   .container {
     width: 100%;
+  }
+  .menuButton p {
+    display: none;
   }
 }
