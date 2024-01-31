@@ -19,7 +19,7 @@ const Mesh = () => {
 
   const ctx = useContext(SliderContext);
 
-  const { headerRef, captionRef, footerRef, transitionRef, indexRef, materialRef, slideIndexRef, isTransitioningRef } = ctx;
+  const { headerRef, captionRef, footerRef, transitionRef, indexRef, materialRef, slideIndexRef, isTransitioningRef, closeButtonRef } = ctx;
 
   const textures = [useVideoTexture(slides[0].src), useVideoTexture(slides[1].src), useVideoTexture(slides[2].src)];
 
@@ -39,6 +39,13 @@ const Mesh = () => {
         onStart: () => {
           if (first === "first") {
             gsap.to(headerRef.current, {
+              y: "0%",
+              duration: 1,
+              delay: 1,
+              opacity: 1,
+              ease: "power2.out",
+            });
+            gsap.to(closeButtonRef.current, {
               y: "0%",
               duration: 1,
               delay: 1,
@@ -67,10 +74,19 @@ const Mesh = () => {
       });
 
       const changeText = () => {
+        console.log(captionRef.current.children);
         const words = slides[slideIndexRef.current].caption.split(" ");
-        const html = words.map((word, i) => `<span key=${i}>${word}</span>`).join(" ");
+        const html = words
+          .map((word, i) => {
+            const chars = word
+              .split("")
+              .map((char, j) => `<span className="span"  key='char-${i}-${j}'>${char}</span>`)
+              .join("");
+            return `<span  key='word-${i}'>${chars}</span>`;
+          })
+          .join(" ");
         captionRef.current.innerHTML = html;
-        gsap.from(captionRef.current.children, { y: "100%", rotationZ: "10", opacity: 0, stagger: 0.1, ease: "power2.out" });
+        gsap.from(Array.from(captionRef.current.getElementsByTagName("span")), { y: "100%", opacity: 0, stagger: 0.05, ease: "power2.out" });
       };
 
       tl.to(materialRef.current.uniforms.uTransitionProgress, {

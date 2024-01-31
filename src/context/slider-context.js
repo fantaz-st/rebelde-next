@@ -21,6 +21,7 @@ export const SliderContextProvider = (props) => {
   const indexRef = useRef();
   const captionRef = useRef();
   const transitionRef = useRef();
+  const closeButtonRef = useRef();
 
   const toggleActiveMenu = () => {
     setActiveMenu((prev) => !prev);
@@ -48,6 +49,7 @@ export const SliderContextProvider = (props) => {
     materialRef,
     slideIndexRef,
     isTransitioningRef,
+    closeButtonRef,
     toggleActiveMenu,
     nextSlide,
     prevSlide,

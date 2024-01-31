@@ -12,7 +12,7 @@ export default function Home() {
       <SliderContextProvider>
         <Header />
         <div className={classes.loading}>
-          <h1>Loading videos...</h1>
+          <h1>Loading</h1>
         </div>
         <div className={classes.line33} />
         <div className={classes.line66} />
