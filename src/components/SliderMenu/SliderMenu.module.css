@@ -105,16 +105,12 @@
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
-}
-
-.menuButton {
-  color: #fff;
-}
-
-.hamburger {
-  /* transition: transform 400ms; */
   opacity: 0; /* gsap fuoc*/
   transform: translateY(-100%); /* gsap fuoc*/
+}
+
+.menuButton p {
+  color: #fff;
 }
 
 .hamburger .line {
