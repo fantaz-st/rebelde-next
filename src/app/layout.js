@@ -5,7 +5,7 @@ const inter = Inter({ subsets: ["latin"], weight: ["300", "500", "700"] });
 
 export const metadata = {
   title: "REBELDE",
-  description: "Next.js, react-three/fiber, shaders, gsap | by FANTAZ",
+  description: "Welcome to REBELDE, your gateway to breathtaking adventures in the Croatian Blue Cave and Blue Lagoon, where every private boat tour promises unforgettable moments on the Adriatic Sea.",
 };
 
 export default function RootLayout({ children }) {

@@ -16,6 +16,10 @@
   left: 0;
 }
 
+.loading h2 {
+  width: 50%;
+}
+
 .line33,
 .line66 {
   content: "";
@@ -36,5 +40,9 @@
   .line33,
   .line66 {
     display: none;
+  }
+
+  .loading h2 {
+    width: 100%;
   }
 }
