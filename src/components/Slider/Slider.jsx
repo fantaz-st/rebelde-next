@@ -74,7 +74,6 @@ const Mesh = () => {
       });
 
       const changeText = () => {
-        console.log(captionRef.current.children);
         const words = slides[slideIndexRef.current].caption.split(" ");
         const html = words
           .map((word, i) => {

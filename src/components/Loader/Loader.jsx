@@ -8,10 +8,10 @@ const Loader = ({ sentences }) => {
       setCurrentSentenceIndex((prevIndex) => (prevIndex + 1) % sentences.length);
     }, 2000);
 
-    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, [sentences.length]);
 
-  return <h2>{sentences[currentSentenceIndex]}</h2>;
+  return <h2 style={{ textAlign: "center", lineHeight: 1.5 }}>{sentences[currentSentenceIndex]}</h2>;
 };
 
 export default Loader;

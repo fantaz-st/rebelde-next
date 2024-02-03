@@ -91,7 +91,7 @@
 .menuButton {
   position: absolute;
   right: 0;
-  top: 8px;
+  top: 25px;
   cursor: pointer;
   user-select: none;
   z-index: 3;
@@ -117,7 +117,7 @@
   fill: none;
   transition: stroke-dasharray 1s, stroke-dashoffset 1s;
   stroke: #fff;
-  stroke-width: 3.5;
+  stroke-width: 4;
   stroke-linecap: square;
 }
 .hamburger .top {
