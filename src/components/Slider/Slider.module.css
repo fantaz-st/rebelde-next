@@ -8,10 +8,11 @@
 }
 
 .caption {
-  max-width: 35%;
+  max-width: 33.333%;
   position: absolute;
   top: 50%;
-  left: 1rem;
+  left: 0;
+  padding: 0 1rem;
   transform: translateY(-50%);
   z-index: 1;
 }
