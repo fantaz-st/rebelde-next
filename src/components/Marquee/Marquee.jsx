@@ -39,10 +39,10 @@ function Marquee() {
 
   return (
     <div className={classes.container} ref={container}>
-      <div className={classes.word}>Experience the wonders of Croatia's Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
-      <div className={classes.word}>Experience the wonders of Croatia's Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
-      <div className={classes.word}>Experience the wonders of Croatia's Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
-      <div className={classes.word}>Experience the wonders of Croatia's Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
+      <div className={classes.word}>Experience the wonders of Croatia&apos;'s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
+      <div className={classes.word}>Experience the wonders of Croatia&apos;'s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
+      <div className={classes.word}>Experience the wonders of Croatia&apos;'s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
+      <div className={classes.word}>Experience the wonders of Croatia&apos;'s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
 
       <div className={classes.lol}></div>
     </div>
