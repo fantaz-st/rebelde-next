@@ -5,8 +5,6 @@ import { Canvas, useLoader, useThree } from "@react-three/fiber";
 import { useAspect, useVideoTexture } from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useContext } from "react";
 
-import SplitType from "split-type";
-
 import transparentPixelSrc from "../../assets/transparent-pixel.png";
 import FallbackMaterial from "../FallbackMaterial/FallbackMaterial";
 import customVideoShader from "@/helpers/shaders";
