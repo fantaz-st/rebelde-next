@@ -46,7 +46,7 @@ const LoadingMarquee = () => {
     <div className={classes.container} ref={marqueeRef}>
       <div className={classes.wrapper}>
         <div className={classes.track}>
-          <div className={classes.text}>Experience the wonders of Croatia's Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
+          <div className={classes.text}>Experience the wonders of Croatia&apos;s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
           <div className={classes.text}>Experimenta las maravillas de la Cueva Azul y la Laguna Azul de Croacia con nuestros tours en barco personalizados. ¡Reserva ahora!</div>
           <div className={classes.text}>Esperienzia le meraviglie della Grotta Azzurra e della Laguna Blu della Croazia con i nostri tour in barca su misura. Prenota ora!</div>
           <div className={classes.text}>Erleben Sie die Wunder der Blauen Grotte und der Blauen Lagune Kroatiens mit unseren maßgeschneiderten Bootstouren. Jetzt buchen!</div>

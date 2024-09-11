@@ -23,7 +23,7 @@ function Marquee() {
 
       Observer.create({
         target: window,
-        type: "wheel",
+        type: "wheel,touch",
         onChangeY: (self) => {
           tl && tl.kill();
           const factor = self.deltaY > 0 ? 1 : -1;
@@ -39,11 +39,10 @@ function Marquee() {
 
   return (
     <div className={classes.container} ref={container}>
-      <div className={classes.word}>Experience the wonders of Croatia&apos;'s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
-      <div className={classes.word}>Experience the wonders of Croatia&apos;'s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
-      <div className={classes.word}>Experience the wonders of Croatia&apos;'s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
-      <div className={classes.word}>Experience the wonders of Croatia&apos;'s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
-
+      <div className={classes.word}>Experience the wonders of Croatia&apos;s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
+      <div className={classes.word}>Experience the wonders of Croatia&apos;s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
+      <div className={classes.word}>Experience the wonders of Croatia&apos;s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
+      <div className={classes.word}>Experience the wonders of Croatia&apos;s Blue Cave and Blue Lagoon with our tailored boat tours – book now!</div>
       <div className={classes.lol}></div>
     </div>
   );
