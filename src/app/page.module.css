@@ -1,7 +1,7 @@
 .app {
   position: relative;
-  height: 100vh;
-  width: 100vw;
+  height: 100dvh; /* Use dynamic viewport height */
+  min-height: 100svh; /* Ensure it adapts to small viewport */
 }
 
 .loading {
