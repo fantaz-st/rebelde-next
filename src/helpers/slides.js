@@ -8,17 +8,17 @@ import poster3 from "../img/private.png";
 
 const slides = [
   {
-    src: "/videos/blue-cave.mp4",
+    src: "/videos/1.mp4",
     caption: "Blue cave and 5 islands",
     poster: poster1,
   },
   {
-    src: "/videos/blue-lagoon.mp4",
+    src: "/videos/2.mp4",
     caption: "Blue lagoon and the shipwreck",
     poster: poster2,
   },
   {
-    src: "/videos/private.mp4",
+    src: "/videos/3.mp4",
     caption: "Luxurious private boat tour",
     poster: poster3,
   },

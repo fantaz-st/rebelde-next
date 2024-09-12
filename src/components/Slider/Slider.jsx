@@ -12,6 +12,7 @@ import classes from "./Slider.module.css";
 import slides from "@/helpers/slides";
 
 import suspenseImg from "../../assets/suspense.png";
+import SplitType from "split-type";
 
 const Mesh = () => {
   const viewport = useThree((state) => state.viewport);
@@ -112,42 +113,17 @@ const Mesh = () => {
   };
 
   const changeText = (slideIndex) => {
-    const words = slides[slideIndex].caption.split(" ");
-    const html = words
-      .map((word, i) => {
-        const chars = word
-          .split("")
-          .map((char, j) => `<span className="span" key='char-${i}-${j}'>${char}</span>`)
-          .join("");
-        return `<span key='word-${i}'>${chars}</span>`;
-      })
-      .join(" ");
-    captionRef.current.innerHTML = html;
-    gsap.from([...captionRef.current.getElementsByTagName("span")], {
+    const captionText = slides[slideIndex].caption;
+    captionRef.current.innerHTML = captionText;
+
+    const splitText = new SplitType(captionRef.current, { types: "lines" });
+
+    gsap.from(splitText.lines, {
       yPercent: 100,
-      // opacity: 0,
-      stagger: 0.05,
+      stagger: 0.2,
       ease: "power2.out",
     });
   };
-
-  /*  const changeText = (slideIndex) => {
-    const lines = slides[slideIndex].caption.split(" "); // Split caption by lines
-    console.log(lines);
-    const html = lines
-      .map((line, i) => `<div class="line" key='line-${i}'>${line}</div>`) // Wrap each line in a div
-      .join(" ");
-
-    captionRef.current.innerHTML = html;
-
-    // Animate each line
-    gsap.from([...captionRef.current.getElementsByClassName("line")], {
-      y: "100%",
-      // opacity: 0,
-      stagger: 0.1, // Delay between each line
-      ease: "power2.out",
-    });
-  }; */
 
   transitionRef.current = transition;
 

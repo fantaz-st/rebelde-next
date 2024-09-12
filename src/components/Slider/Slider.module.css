@@ -23,10 +23,11 @@
   text-shadow: 2px 3px 5px rgba(0, 0, 0, 0.5);
 }
 
-.caption h1 span {
-  display: inline-block;
+.caption h1 * {
+  height: 100%;
+  display: inline-block !important;
   line-height: 1;
-  overflow: hidden;
+  overflow: hidden !important;
 }
 
 @media screen and (max-width: 640px) {
