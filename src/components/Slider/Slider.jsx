@@ -84,7 +84,7 @@ const Mesh = () => {
   const startSlideTransition = (tl, currentSlideIndex, nextSlideIndex) => {
     tl.to(materialRef.current.uniforms.uTransitionProgress, {
       value: 1,
-      duration: 0.8,
+      duration: 0.6,
       ease: "power2.out",
     })
       .to(captionRef.current.children, {
