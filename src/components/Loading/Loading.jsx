@@ -5,7 +5,7 @@ const Loading = () => {
     <div className={classes.container}>
       <div className={classes.wrapper}>
         <h1>RBD</h1>
-        <h1>Please wait :)</h1>
+        <h1>Please wait, loading media :)</h1>
 
         <svg className={classes.waveImg} version='1.1' x='0px' y='0px' viewBox='0 0 80 30'>
           <path
