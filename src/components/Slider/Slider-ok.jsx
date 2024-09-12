@@ -12,6 +12,7 @@ import classes from "./Slider.module.css";
 import slides from "@/helpers/slides";
 
 import suspenseImg from "../../assets/suspense.png";
+import SplitType from "split-type";
 
 const Mesh = () => {
   const viewport = useThree((state) => state.viewport);
@@ -21,7 +22,11 @@ const Mesh = () => {
 
   const { headerRef, captionRef, footerRef, transitionRef, indexRef, materialRef, slideIndexRef, isTransitioningRef, closeButtonRef } = ctx;
 
-  const textures = [useVideoTexture(slides[0].src), useVideoTexture(slides[1].src), useVideoTexture(slides[2].src)];
+  const texture1 = useVideoTexture(slides[0].src);
+  const texture2 = useVideoTexture(slides[1].src);
+  const texture3 = useVideoTexture(slides[2].src);
+
+  const textures = useMemo(() => [texture1, texture2, texture3], [texture1, texture2, texture3]);
 
   const transparentPixelTexture = useLoader(TextureLoader, transparentPixelSrc.src);
 
@@ -80,12 +85,13 @@ const Mesh = () => {
   const startSlideTransition = (tl, currentSlideIndex, nextSlideIndex) => {
     tl.to(materialRef.current.uniforms.uTransitionProgress, {
       value: 1,
-      duration: 0.8,
+      duration: 0.6,
       ease: "power2.out",
     })
       .to(captionRef.current.children, {
         delay: -1,
-        opacity: 0,
+        // opacity: 0,
+        yPercent: 0,
         ease: "power2.out",
         onComplete: () => changeText(nextSlideIndex),
       })
@@ -93,7 +99,7 @@ const Mesh = () => {
         y: "-100%",
         ease: "power2.out",
         onComplete: () => {
-          indexRef.current.textContent = `0${currentSlideIndex + 1}`;
+          indexRef.current.textContent = `0${nextSlideIndex + 1}`;
         },
       });
   };
@@ -107,21 +113,14 @@ const Mesh = () => {
   };
 
   const changeText = (slideIndex) => {
-    const words = slides[slideIndex].caption.split(" ");
-    const html = words
-      .map((word, i) => {
-        const chars = word
-          .split("")
-          .map((char, j) => `<span className="span" key='char-${i}-${j}'>${char}</span>`)
-          .join("");
-        return `<span key='word-${i}'>${chars}</span>`;
-      })
-      .join(" ");
-    captionRef.current.innerHTML = html;
-    gsap.from([...captionRef.current.getElementsByTagName("span")], {
-      y: "100%",
-      opacity: 0,
-      stagger: 0.05,
+    const captionText = slides[slideIndex].caption;
+    captionRef.current.innerHTML = captionText;
+
+    const splitText = new SplitType(captionRef.current, { types: "lines" });
+
+    gsap.from(splitText.lines, {
+      yPercent: 100,
+      stagger: 0.2,
       ease: "power2.out",
     });
   };

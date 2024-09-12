@@ -6,10 +6,12 @@ export const SliderContext = createContext({
   toggleActiveMenu: () => {},
   nextSlide: () => {},
   prevSlide: () => {},
+  setViewportSize: () => {},
 });
 
 export const SliderContextProvider = (props) => {
   const [activeMenu, setActiveMenu] = useState(false);
+  const [viewportSize, setViewportSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
   const materialRef = useRef();
 
@@ -53,6 +55,8 @@ export const SliderContextProvider = (props) => {
     toggleActiveMenu,
     nextSlide,
     prevSlide,
+    viewportSize,
+    setViewportSize,
   };
 
   return <SliderContext.Provider value={providerValues}>{props.children}</SliderContext.Provider>;
