@@ -8,18 +8,21 @@ import poster3 from "../img/private.png";
 
 const slides = [
   {
+    id: "slide1",
     src: "/videos/1.mp4",
-    caption: "Blue cave and 5 islands",
+    caption: "1 Blue cave and 5 islands",
     poster: poster1,
   },
   {
+    id: "slide2",
     src: "/videos/2.mp4",
-    caption: "Blue lagoon and the shipwreck",
+    caption: "2 Blue lagoon and the shipwreck",
     poster: poster2,
   },
   {
+    id: "slide3",
     src: "/videos/3.mp4",
-    caption: "Luxurious private boat tour",
+    caption: "3 Luxurious private boat tour",
     poster: poster3,
   },
 ];

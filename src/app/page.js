@@ -7,21 +7,23 @@ import SliderMenu from "@/components/SliderMenu/SliderMenu";
 import { SliderContextProvider } from "@/context/slider-context";
 import Loading from "@/components/Loading/Loading";
 import Marquee from "@/components/Marquee/Marquee";
+import VideoSlider from "@/components/VideoSlider/VideoSlider";
 
 export default function Home() {
   return (
     <main>
       <div className={classes.app}>
-        <SliderContextProvider>
+        <VideoSlider />
+        {/* <SliderContextProvider>
           <Header />
           <Loading />
           <div className={classes.line33} />
           <div className={classes.line66} />
           <Slider />
           <SliderMenu />
-        </SliderContextProvider>
+        </SliderContextProvider> */}
       </div>
-      <Marquee />
+      {/* <Marquee /> */}
     </main>
   );
 }
