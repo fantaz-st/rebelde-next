@@ -25,7 +25,7 @@ const ComplexShaderMaterial = shaderMaterial(
     uAngle: (45 * Math.PI) / 180,
     uScale: 3,
     uInputResolution: new Vector2(1920, 1080),
-    uOutputResolution: new Vector2(window.innerWidth, window.innerHeight),
+    uOutputResolution: new Vector2(1, 1),
   },
   vertexShader,
   fragmentShader
