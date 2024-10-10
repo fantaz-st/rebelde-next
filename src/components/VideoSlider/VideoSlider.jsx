@@ -36,6 +36,13 @@ const ShaderPlane = ({ texturesRef, progressRef }) => {
   const materialRef = useRef();
   const { viewport, size } = useThree();
 
+  useEffect(() => {
+    // Set uOutputResolution with the actual window dimensions when in the browser
+    if (materialRef.current) {
+      materialRef.current.uOutputResolution = new Vector2(size.width, size.height);
+    }
+  }, [size.width, size.height]);
+
   useFrame(() => {
     if (materialRef.current) {
       materialRef.current.uTexture1 = texturesRef.current[0];
@@ -46,7 +53,6 @@ const ShaderPlane = ({ texturesRef, progressRef }) => {
       materialRef.current.uAngle = (45 * Math.PI) / 180;
       materialRef.current.uScale = 3;
       materialRef.current.uInputResolution = new Vector2(1920, 1080);
-      materialRef.current.uOutputResolution = new Vector2(size.width, size.height);
     }
   });
 
