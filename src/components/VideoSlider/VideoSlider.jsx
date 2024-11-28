@@ -11,9 +11,7 @@ import { fragmentShader, vertexShader } from "./shaders";
 import { CustomEase } from "gsap/all";
 import { Vector2 } from "three";
 
-gsap.registerPlugin(useGSAP, CustomEase);
-
-CustomEase.create("hop", "M0,0 C0.29,0 0.348,0.05 0.422,0.134 0.494,0.217 0.484,0.355 0.5,0.5 0.518,0.662 0.515,0.793 0.596,0.876 0.701,0.983 0.72,0.987 1,1");
+gsap.registerPlugin(useGSAP);
 
 const ComplexShaderMaterial = shaderMaterial(
   {
@@ -37,8 +35,8 @@ const ShaderPlane = ({ texturesRef, progressRef }) => {
   const { viewport, size } = useThree();
 
   useEffect(() => {
-    // Set uOutputResolution with the actual window dimensions when in the browser
     if (materialRef.current) {
+      console.log(size.width, size.height);
       materialRef.current.uOutputResolution = new Vector2(size.width, size.height);
     }
   }, [size.width, size.height]);
@@ -78,6 +76,12 @@ const VideoSlider = () => {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
+  const [currentIndex, setCurrentIndex] = useState(0); // UI state for titles
+
+  const syncUIWithShader = () => {
+    setCurrentIndex(currentIndexRef.current);
+  };
+
   const createVideoTexture = (src, onProgress) => {
     const video = document.createElement("video");
     video.src = src;
@@ -88,17 +92,14 @@ const VideoSlider = () => {
     video.autoplay = true;
 
     return new Promise((resolve, reject) => {
-      const updateProgress = () => {
+      video.onprogress = () => {
         const buffered = video.buffered;
         if (buffered.length) {
-          const loaded = buffered.end(0);
-          const total = video.duration;
-          const percent = (loaded / total) * 100;
+          const percent = (buffered.end(0) / video.duration) * 100;
           onProgress(percent);
         }
       };
 
-      video.onprogress = updateProgress;
       video.oncanplay = () => {
         video
           .play()
@@ -106,43 +107,32 @@ const VideoSlider = () => {
           .catch((error) => reject(error));
       };
 
-      video.onerror = () => {
-        reject(new Error(`Failed to load video: ${src}`));
-      };
+      video.onerror = () => reject(new Error(`Failed to load video: ${src}`));
     });
   };
 
   const disposeOldTexture = (oldTexture) => {
     if (oldTexture instanceof THREE.VideoTexture && oldTexture.image) {
-      const videoElement = oldTexture.image;
-      if (!videoElement.paused) videoElement.pause();
-      videoElement.src = "";
+      oldTexture.image.pause();
+      oldTexture.image.src = "";
       oldTexture.dispose();
     }
   };
 
   useEffect(() => {
     let isMounted = true;
-    let totalProgress = 0;
-
     const handleProgress = (percent) => {
-      totalProgress += percent / slides.length;
-      setProgress(totalProgress);
-      console.log(`Loading progress: ${totalProgress.toFixed(2)}%`);
+      setProgress((prev) => Math.min(100, prev + percent / slides.length));
     };
 
-    Promise.all([createVideoTexture(slides[0].video, handleProgress), createVideoTexture(slides[1].video, handleProgress)])
-      .then((videoTextures) => {
+    Promise.all(slides.map((slide) => createVideoTexture(slide.video, handleProgress)))
+      .then((textures) => {
         if (isMounted) {
-          texturesRef.current = videoTextures;
+          texturesRef.current = textures.slice(0, 2); // Start with first two textures
           setLoading(false);
-          setProgress(100); // Set to 100% when all videos are loaded
-          console.log("All videos loaded.");
         }
       })
-      .catch((error) => {
-        console.error("Error loading video textures:", error);
-      });
+      .catch((error) => console.error("Error loading video textures:", error));
 
     return () => {
       isMounted = false;
@@ -151,20 +141,12 @@ const VideoSlider = () => {
 
   useGSAP(() => {
     if (loading) return;
-    const titleItems = gsap.utils.toArray(`.${classes.title}`);
-    titleLoopRef.current = verticalLoop(titleItems, { speed: 0.7, repeat: -1, paused: true });
 
     const changeSlide = (direction) => {
       if (isTransitioningRef.current) return;
       isTransitioningRef.current = true;
-      directionRef.current = direction;
-      const targetIndex = (currentIndexRef.current + direction + slides.length) % slides.length;
 
-      if (direction === 1) {
-        titleLoopRef.current.next({ duration: 0.8, ease: "Sine.easeInOut" });
-      } else {
-        titleLoopRef.current.previous({ duration: 0.8, ease: "Sine.easeInOut" });
-      }
+      const targetIndex = (currentIndexRef.current + direction + slides.length) % slides.length;
 
       createVideoTexture(slides[targetIndex].video, () => {}).then((nextVideoTexture) => {
         const oldTexture = texturesRef.current[1];
@@ -177,14 +159,60 @@ const VideoSlider = () => {
           onUpdate: () => {
             progressRef.current = gsap.getProperty(progressRef, "current");
           },
+          onStart: () => {
+            // Call animateTitles
+            animateTitles(targetIndex);
+          },
           onComplete: () => {
             disposeOldTexture(oldTexture);
             texturesRef.current = [nextVideoTexture, nextVideoTexture];
             currentIndexRef.current = targetIndex;
+
             progressRef.current = 0.0;
             isTransitioningRef.current = false;
           },
         });
+      });
+    };
+
+    const animateTitles = (newIndex) => {
+      const titles = gsap.utils.toArray(`.${classes.title} span`);
+      /* gsap.from(titles, {
+        yPercent: 100,
+        stagger: 0.1,
+        ease: "power2.out",
+        onComplete: () => {
+          setCurrentIndex(newIndex);
+          gsap.to(titles, {
+            yPercent: 0,
+            stagger: 0.1,
+            ease: "power2.out",
+          });
+        },
+      }); */
+
+      gsap.to(titles, {
+        yPercent: -100, // Move up and away
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "power2.in",
+        onComplete: () => {
+          setCurrentIndex(newIndex); // Update current index STATE regardless of refs
+
+          // Slide in the new title
+          const newTitleSpans = document.querySelectorAll(`.${classes.title} span`);
+          gsap.fromTo(
+            newTitleSpans,
+            { yPercent: 100 }, // Start below and invisible
+            {
+              yPercent: 0,
+              delay: 0.5,
+              duration: 0.5,
+              stagger: 0.1,
+              ease: "power2.out",
+            }
+          );
+        },
       });
     };
 
@@ -209,11 +237,13 @@ const VideoSlider = () => {
           <div className={classes.slideContent}>
             <div className={classes.textContainer}>
               <div className={classes.inner}>
-                {slides.map((slide, index) => (
-                  <div key={index} className={classes.title}>
-                    <h1>{slide.title}</h1>
-                  </div>
-                ))}
+                <div className={classes.title}>
+                  {slides[currentIndex].title.map((title) => (
+                    <h1 key={slides[currentIndex].id + title}>
+                      <span>{title}</span>
+                    </h1>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
