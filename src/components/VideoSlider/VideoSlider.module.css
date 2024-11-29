@@ -2,7 +2,10 @@
   overflow: hidden;
   margin: 0;
   padding: 0;
-  height: 100vh;
+
+  height: 100dvh; /* Use dynamic viewport height */
+  min-height: 100svh; /* Ensure it adapts to small viewport */
+
   width: 100vw;
   position: relative;
   font-family: "Poppins", sans-serif;

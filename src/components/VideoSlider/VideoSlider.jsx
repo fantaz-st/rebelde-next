@@ -44,7 +44,8 @@ const ShaderPlane = ({ texturesRef, progressRef }) => {
       materialRef.current.uColumnsCount = 3.0;
       materialRef.current.uAngle = (45 * Math.PI) / 180;
       materialRef.current.uScale = 3;
-      materialRef.current.uInputResolution = new Vector2(1920, 1080);
+      // materialRef.current.uInputResolution = new Vector2(1920, 1080);
+      materialRef.current.uInputResolution = new Vector2(16, 9);
       materialRef.current.uOutputResolution = scale.slice(0, 2);
     }
   });
