@@ -13,15 +13,15 @@ export default function Home() {
   return (
     <main>
       <div className={classes.app}>
-        <VideoSlider />
-        {/* <SliderContextProvider>
+        <SliderContextProvider>
           <Header />
           <Loading />
           <div className={classes.line33} />
           <div className={classes.line66} />
           <Slider />
+          {/* <VideoSlider /> */}
           <SliderMenu />
-        </SliderContextProvider> */}
+        </SliderContextProvider>
       </div>
       {/* <Marquee /> */}
     </main>
