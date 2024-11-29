@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { shaderMaterial } from "@react-three/drei";
+import { shaderMaterial, useAspect } from "@react-three/drei";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { verticalLoop } from "@/helpers/verticalLoop";
@@ -32,14 +32,8 @@ extend({ ComplexShaderMaterial });
 
 const ShaderPlane = ({ texturesRef, progressRef }) => {
   const materialRef = useRef();
-  const { viewport, size } = useThree();
-
-  useEffect(() => {
-    if (materialRef.current) {
-      console.log(size.width, size.height);
-      materialRef.current.uOutputResolution = new Vector2(size.width, size.height);
-    }
-  }, [size.width, size.height]);
+  const { viewport } = useThree();
+  const scale = useAspect(viewport.width, viewport.height, 1);
 
   useFrame(() => {
     if (materialRef.current) {
@@ -51,11 +45,12 @@ const ShaderPlane = ({ texturesRef, progressRef }) => {
       materialRef.current.uAngle = (45 * Math.PI) / 180;
       materialRef.current.uScale = 3;
       materialRef.current.uInputResolution = new Vector2(1920, 1080);
+      materialRef.current.uOutputResolution = scale.slice(0, 2);
     }
   });
 
   return (
-    <mesh scale={[viewport.width, viewport.height, 1]}>
+    <mesh scale={scale}>
       <planeGeometry args={[1, 1]} />
       <complexShaderMaterial ref={materialRef} />
     </mesh>
