@@ -10,7 +10,7 @@ import { fragmentShader, vertexShader } from "./shaders";
 
 gsap.registerPlugin(useGSAP);
 
-// Define the shader material outside of the component
+// Shader material
 const ComplexShaderMaterial = shaderMaterial(
   {
     uTexture1: new THREE.Texture(),
@@ -28,50 +28,91 @@ const ComplexShaderMaterial = shaderMaterial(
 );
 extend({ ComplexShaderMaterial });
 
-// A helper function to create a video texture
-function createVideoTexture(src, onProgress) {
-  const video = document.createElement("video");
-  video.src = src;
-  video.crossOrigin = "anonymous";
-  video.loop = true;
-  video.muted = true;
-  video.playsInline = true;
-  video.autoplay = true;
+/**
+ * Fetches a video via Fetch API and reports download progress.
+ * Returns a Blob URL once fully fetched.
+ */
+async function fetchVideoWithProgress(url, onProgress) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Failed to fetch video: ${response.statusText}`);
 
+  const contentLength = response.headers.get("content-length");
+  const total = contentLength ? parseInt(contentLength, 10) : 0;
+  let loaded = 0;
+
+  const reader = response.body.getReader();
+  const chunks = [];
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    loaded += value.length;
+
+    if (total && onProgress) {
+      const percent = (loaded / total) * 100;
+      onProgress(percent);
+    }
+  }
+
+  const blob = new Blob(chunks);
+  return URL.createObjectURL(blob);
+}
+
+/**
+ * Creates a VideoTexture from a blob URL.
+ * It sets up a video element, waits for canplay, then resolves a VideoTexture.
+ */
+function createVideoTextureFromBlobURL(blobURL) {
   return new Promise((resolve, reject) => {
-    video.onprogress = () => {
-      const buffered = video.buffered;
-      if (buffered.length) {
-        const percent = (buffered.end(0) / video.duration) * 100;
-        onProgress(percent);
-      }
-    };
+    const video = document.createElement("video");
+    video.src = blobURL;
+    video.crossOrigin = "anonymous";
+    video.loop = true;
+    video.muted = true;
+    video.playsInline = true;
+    // Don't autoplay until we know we can play
+    video.autoplay = false;
 
     video.oncanplay = () => {
+      // Play the video
       video
         .play()
         .then(() => {
           const texture = new THREE.VideoTexture(video);
           resolve(texture);
         })
-        .catch((error) => reject(error));
+        .catch(reject);
     };
 
-    video.onerror = () => reject(new Error(`Failed to load video: ${src}`));
+    video.onerror = () => reject(new Error(`Failed to load video from blob URL: ${blobURL}`));
   });
 }
 
-// A helper function to dispose of old textures
+/**
+ * Loads a single video texture with exact progress.
+ * Uses fetchVideoWithProgress and createVideoTextureFromBlobURL together.
+ */
+async function createVideoTexture(url, onProgress) {
+  const blobURL = await fetchVideoWithProgress(url, onProgress);
+  return createVideoTextureFromBlobURL(blobURL);
+}
+
+/**
+ * Disposes a video texture properly.
+ */
 function disposeTexture(texture) {
   if (texture instanceof THREE.VideoTexture && texture.image) {
-    // Pause and clear the video source to help with garbage collection
     texture.image.pause();
     texture.image.src = "";
     texture.dispose();
   }
 }
 
-// Custom hook to handle loading of video textures
+/**
+ * Custom hook to load all video textures from slides.
+ * Aggregates progress across all videos.
+ */
 function useVideoTextures(slides) {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -79,21 +120,40 @@ function useVideoTextures(slides) {
 
   useEffect(() => {
     let isMounted = true;
+    let loadedCount = 0;
 
-    const handleProgress = (percent) => {
-      setProgress((prev) => Math.min(100, prev + percent / slides.length));
+    const handlePerVideoProgress = (percent) => {
+      // percent here is for a single video download progress (0-100)
+      // We can average across all videos or sum them incrementally
+      // For simplicity, we will consider loading complete of each video separately
+      // and sum up as they finish.
+      // Another approach: track each video's progress individually and average them.
     };
 
-    // Load all slides as textures
-    Promise.all(slides.map((slide) => createVideoTexture(slide.video, handleProgress)))
-      .then((textures) => {
+    // We'll load each video sequentially for a stable cumulative progress.
+    (async () => {
+      try {
+        let totalVideos = slides.length;
+        let cumulativeProgress = 0;
+
+        for (let i = 0; i < totalVideos; i++) {
+          await createVideoTexture(slides[i].video, (videoPercent) => {
+            // This is per-video percent
+            // Convert to overall progress: (i + videoPercent/100) / totalVideos * 100
+            let overall = ((i + videoPercent / 100) / totalVideos) * 100;
+            if (isMounted) setProgress(overall);
+          }).then((texture) => {
+            texturesRef.current.push(texture);
+          });
+        }
+
         if (isMounted) {
-          // Initially set only the first two textures (same texture twice initially)
-          texturesRef.current = textures.slice(0, 2);
           setLoading(false);
         }
-      })
-      .catch((error) => console.error("Error loading video textures:", error));
+      } catch (err) {
+        console.error("Error loading videos:", err);
+      }
+    })();
 
     return () => {
       isMounted = false;
@@ -108,7 +168,6 @@ function ShaderPlane({ texturesRef, progressRef }) {
   const { viewport } = useThree();
   const scale = useAspect(viewport.width, viewport.height, 1);
 
-  // Set static uniforms once
   useEffect(() => {
     if (materialRef.current) {
       materialRef.current.uOffsetAmount = 3;
@@ -119,13 +178,11 @@ function ShaderPlane({ texturesRef, progressRef }) {
     }
   }, []);
 
-  // Update dynamic uniforms each frame
   useFrame(() => {
-    if (materialRef.current && texturesRef.current) {
+    if (materialRef.current && texturesRef.current.length >= 2) {
       materialRef.current.uTexture1 = texturesRef.current[0];
       materialRef.current.uTexture2 = texturesRef.current[1];
       materialRef.current.uTransitionProgress = progressRef.current;
-      // Output resolution based on current scale
       materialRef.current.uOutputResolution = new THREE.Vector2(scale[0], scale[1]);
     }
   });
@@ -147,7 +204,6 @@ const VideoSlider = () => {
 
   const { texturesRef, loading, progress } = useVideoTextures(slides);
 
-  // Function to change slides
   const changeSlide = useCallback(
     (direction) => {
       if (isTransitioningRef.current) return;
@@ -183,14 +239,14 @@ const VideoSlider = () => {
 
   const handleWheel = useCallback(
     (event) => {
-      if (!isTransitioningRef.current) {
+      if (!isTransitioningRef.current && !loading) {
         clearTimeout(scrollTimeout.current);
         scrollTimeout.current = setTimeout(() => {
           changeSlide(event.deltaY > 0 ? 1 : -1);
         }, 300);
       }
     },
-    [changeSlide]
+    [changeSlide, loading]
   );
 
   return (
