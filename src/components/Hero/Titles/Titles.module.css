@@ -1,0 +1,71 @@
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  padding-left: 2rem;
+  box-sizing: border-box;
+}
+
+.textContainer {
+  height: 100%;
+  width: 33.333%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: stretch;
+  align-content: center;
+}
+
+.title span {
+  display: inline-block;
+}
+
+.title p {
+  overflow: hidden;
+}
+
+.title {
+  position: absolute;
+  overflow: hidden;
+  /* line-height: 1; */
+  /* top: 50%;
+    transform: translateY(-50%); */
+  font-weight: 700;
+  font-size: 6rem;
+  /* opacity: 0; */
+  visibility: hidden; /* Hidden but still part of the layout */
+  pointer-events: none;
+  margin: 0;
+  color: red;
+}
+
+.title.active {
+  visibility: visible;
+  opacity: 1; /* Fully visible when active */
+  pointer-events: all;
+}
+
+.title.word {
+  overflow: hidden;
+  margin-bottom: -15px; /* Using margin bottom to tighten lines instead of line height, because line-height doesn't play well with overflow hidden and it will clip descendings of letters*/
+}
+.controls {
+  position: absolute;
+  bottom: 5%;
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.counter {
+  overflow: hidden;
+}
+.counter span {
+  display: inline-block;
+}

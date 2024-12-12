@@ -8,14 +8,14 @@ import { SliderContextProvider } from "@/context/slider-context";
 import Loading from "@/components/Loading/Loading";
 import Marquee from "@/components/Marquee/Marquee";
 import VideoSlider from "@/components/VideoSlider/VideoSlider";
+import Fuck from "@/components/Fuck/Fuck";
 
 export default function Home() {
   return (
     <main>
       <div className={classes.app}>
-        <div className={classes.line33} />
-        <div className={classes.line66} />
-        <VideoSlider />
+        <Fuck />
+        {/* <VideoSlider /> */}
         {/* <SliderContextProvider>
           <Header />
           <Loading />

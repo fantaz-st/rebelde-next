@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useCallback, useState } from "react";
+import classes from "./Fuck.module.css";
+import slides from "./data";
+
 import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { shaderMaterial, useAspect } from "@react-three/drei";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import classes from "./VideoSlider.module.css";
-import slides from "./data";
 import { fragmentShader, vertexShader } from "./shaders";
-
 gsap.registerPlugin(useGSAP);
 
 const ComplexShaderMaterial = shaderMaterial(
@@ -56,7 +56,12 @@ function ShaderPlane({ texturesRef, progressRef }) {
   );
 }
 
-const VideoSlider = () => {
+const Fuck = () => {
+  const textContainerRef = useRef(null);
+  const currentSlideIndex = useRef(0);
+  const counterRef = useRef(null);
+  const [counter, setCounter] = useState(1);
+  const isTransitioning = useRef(false);
   const containerRef = useRef(null);
   const scrollTimeout = useRef(0);
   const isTransitioningRef = useRef(false);
@@ -70,7 +75,6 @@ const VideoSlider = () => {
 
   const placeholderTextureRef = useRef(null);
   const footerRef = useRef(null);
-  const textContainerRef = useRef(null);
 
   const showUI = useCallback(() => {
     // Footer animation
@@ -121,6 +125,121 @@ const VideoSlider = () => {
     }
   };
 
+  const updateCounter = (num) => {
+    const counterEl = counterRef.current;
+
+    // Animate out
+    gsap.fromTo(
+      counterEl,
+      { y: 0 },
+      {
+        y: -20,
+        duration: 0.2,
+        ease: "power2.in",
+        onComplete: () => {
+          // Update the counter after animating out
+          setCounter(num);
+
+          // Animate in
+          gsap.fromTo(
+            counterEl,
+            { y: 20 },
+            {
+              y: 0,
+              duration: 0.3,
+              ease: "power2.out",
+            }
+          );
+        },
+      }
+    );
+  };
+
+  const goToSlide = useCallback((index) => {
+    // Prevent triggering a new transition if one is already active
+    if (isTransitioning.current) return;
+
+    isTransitioning.current = true; // Set transitioning to true
+
+    const previousSlideIndex = currentSlideIndex.current;
+    currentSlideIndex.current = index;
+
+    animateCaptions(previousSlideIndex, currentSlideIndex.current, () => {
+      isTransitioning.current = false; // Reset transitioning when animation is complete
+    });
+    updateCounter(currentSlideIndex.current + 1);
+  }, []);
+
+  const goToNextSlide = () => {
+    const index = currentSlideIndex.current === slides.length - 1 ? 0 : currentSlideIndex.current + 1;
+    goToSlide(index);
+    changeSlide(1);
+  };
+
+  const goToPreviousSlide = () => {
+    const index = currentSlideIndex.current === 0 ? slides.length - 1 : currentSlideIndex.current - 1;
+    goToSlide(index);
+    changeSlide(-1);
+  };
+
+  const animateCaptions = (prev, next, onComplete) => {
+    if (prev === next) {
+      onComplete?.();
+      return;
+    }
+    animateOutPreviousCaptions(prev, () => {
+      animateInNextCaption(next, false, onComplete);
+    });
+  };
+
+  const animateOutPreviousCaptions = (prev, callback) => {
+    const captionEls = textContainerRef.current.querySelectorAll(`.${classes.title}`);
+    const captionEl = captionEls[prev];
+    if (!captionEl) {
+      callback?.();
+      return;
+    }
+
+    const spans = captionEl.querySelectorAll("p span");
+
+    gsap.fromTo(
+      spans,
+      { yPercent: 0 },
+      {
+        yPercent: -100,
+        stagger: 0.05,
+        duration: 0.5,
+        ease: "power2.out",
+        onComplete: callback,
+      }
+    );
+  };
+
+  const animateInNextCaption = (next, first = false, onComplete) => {
+    const captionEls = textContainerRef.current.querySelectorAll(`.${classes.title}`);
+    const captionEl = captionEls[next];
+    if (!captionEl) return;
+
+    const spans = captionEl.querySelectorAll("p span");
+
+    captionEl.classList.add(classes.active);
+
+    gsap.killTweensOf(spans);
+
+    gsap.fromTo(
+      spans,
+      { yPercent: 100 },
+      {
+        yPercent: 0,
+        stagger: 0.05,
+        delay: first ? 0.8 : null,
+        duration: 0.5,
+        ease: "power2.out",
+        onComplete,
+      }
+    );
+  };
+
   const changeSlide = useCallback(
     (direction) => {
       if (isTransitioningRef.current || loading || texturesRef.current.length === 0) return;
@@ -163,6 +282,9 @@ const VideoSlider = () => {
   }, []);
 
   useEffect(() => {
+    animateInNextCaption(0, true, () => {
+      isTransitioning.current = false; // Allow transitions after the initial animation
+    });
     let isMounted = true;
     const handleProgress = (percent) => {
       setProgress((prev) => Math.min(100, prev + percent / slides.length));
@@ -200,54 +322,46 @@ const VideoSlider = () => {
     };
   }, [showUI]);
 
-  useGSAP(() => {
-    if (loading) return;
-
-    const handleWheel = (event) => {
-      if (isTransitioningRef.current) return;
-      clearTimeout(scrollTimeout.current);
-      scrollTimeout.current = setTimeout(() => {
-        changeSlide(event.deltaY > 0 ? 1 : -1);
-      }, 300);
-    };
-
-    containerRef.current.addEventListener("wheel", handleWheel);
-  }, [loading, containerRef, changeSlide]);
-
   return (
-    <div className={classes.container} ref={containerRef}>
-      {loading ? (
+    <div className={classes.container}>
+      {/* {loading ? (
         <div className={classes.loader}>Loading... {Math.round(progress)}%</div>
       ) : (
-        <>
-          <Canvas camera={{ position: [0, 0, 2], fov: 100 }}>
-            <ShaderPlane texturesRef={texturesRef} progressRef={progressRef} />
-          </Canvas>
-          <div className={classes.textContainer} ref={textContainerRef}>
-            {slides.map((slide, i) => (
-              <div key={slide.id} className={classes.title}>
-                {slide.title.map((titl, j) => (
-                  <p key={slide.id + j}>
-                    <span>{titl}</span>
-                  </p>
-                ))}
-              </div>
+        <> */}
+      <div className={classes.content} ref={textContainerRef}>
+        {slides.map((slide, i) => (
+          <div key={slide.id} className={classes.title}>
+            {slide.title.map((titl, j) => (
+              <p key={slide.id + j}>
+                <span>{titl}</span>
+              </p>
             ))}
           </div>
-          <div className={classes.footer} ref={footerRef}>
-            <div className={classes.controls}>
-              <div className={classes.control} onClick={() => changeSlide(-1)}>
-                {"<"}
-              </div>
-              <div className={classes.control} onClick={() => changeSlide(1)}>
-                {">"}
-              </div>
+        ))}
+
+        <div className={classes.footer}>
+          <p className={classes.counter}>
+            0<span ref={counterRef}>{counter}</span>|0{slides.length}
+          </p>
+          <div className={classes.controls}>
+            <div className={classes.control} onClick={goToPreviousSlide}>
+              {"<"}
+            </div>
+            <div className={classes.control} onClick={goToNextSlide}>
+              {">"}
             </div>
           </div>
-        </>
-      )}
+        </div>
+      </div>
+      <Canvas camera={{ position: [0, 0, 2], fov: 100 }}>
+        <ShaderPlane texturesRef={texturesRef} progressRef={progressRef} />
+      </Canvas>
+      <div className={classes.line33} />
+      <div className={classes.line66} />
+      {/*  </>
+      )} */}
     </div>
   );
 };
 
-export default VideoSlider;
+export default Fuck;
