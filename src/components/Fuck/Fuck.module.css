@@ -1,8 +1,14 @@
 .container {
   position: relative;
-  width: 100vw;
-  height: 100vh;
   box-sizing: border-box;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  height: 100dvh; /* Use dynamic viewport height */
+  min-height: 100svh; /* Ensure it adapts to small viewport */
+  width: 100vw;
+  font-family: "Poppins", sans-serif;
+  color: #fff;
 }
 
 .content {
@@ -45,6 +51,7 @@
   visibility: hidden; /* Hidden but still part of the layout */
   pointer-events: none;
   margin: 0;
+  text-shadow: 2px 3px 5px rgba(0, 0, 0, 0.5);
 }
 
 .title.active {
@@ -148,4 +155,36 @@
 
 .line66 {
   left: 66.66666%;
+}
+
+@media screen and (max-width: 640px) {
+  .content {
+    width: calc(100% - 2rem);
+    padding: 0 1rem;
+  }
+  .line33,
+  .line66 {
+    display: none;
+  }
+
+  .loading h2 {
+    width: 100%;
+    text-align: center;
+  }
+
+  .titleContainer {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  .title {
+    font-size: 3rem;
+  }
+
+  .footer {
+    width: calc(100% - 2rem);
+    padding: 0 1rem;
+    margin-bottom: 10px;
+  }
 }

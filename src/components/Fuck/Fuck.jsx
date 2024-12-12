@@ -231,7 +231,7 @@ const Fuck = () => {
       { yPercent: 100 },
       {
         yPercent: 0,
-        stagger: 0.05,
+        stagger: 0.1,
         delay: first ? 0.8 : null,
         duration: 0.5,
         ease: "power2.out",
@@ -341,7 +341,7 @@ const Fuck = () => {
 
         <div className={classes.footer}>
           <p className={classes.counter}>
-            0<span ref={counterRef}>{counter}</span>|0{slides.length}
+            0<span ref={counterRef}>{counter}</span> | 0{slides.length}
           </p>
           <div className={classes.controls}>
             <div className={classes.control} onClick={goToPreviousSlide}>
