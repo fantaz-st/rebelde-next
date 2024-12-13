@@ -1,29 +1,20 @@
 "use client";
 
 import Header from "../components/Header/Header";
-import Slider from "../components/Slider/Slider";
+import Hero from "@/components/Hero/Hero";
+import { HeroProvider } from "@/context/hero-context";
 import classes from "./page.module.css";
-import SliderMenu from "@/components/SliderMenu/SliderMenu";
-import { SliderContextProvider } from "@/context/slider-context";
-import Loading from "@/components/Loading/Loading";
-import Marquee from "@/components/Marquee/Marquee";
-import VideoSlider from "@/components/VideoSlider2/VideoSlider";
-import Fuck from "@/components/Fuck/Fuck";
+import Menu from "@/components/Hero/Menu/Menu";
 
 export default function Home() {
   return (
     <main>
       <div className={classes.app}>
-        <Fuck />
-        {/* <VideoSlider /> */}
-        {/* <SliderContextProvider>
+        <HeroProvider>
           <Header />
-          <Loading />
-          <div className={classes.line33} />
-          <div className={classes.line66} />
-          <Slider />
-          <SliderMenu />
-        </SliderContextProvider> */}
+          <Menu />
+          <Hero />
+        </HeroProvider>
       </div>
       {/* <Marquee /> */}
     </main>

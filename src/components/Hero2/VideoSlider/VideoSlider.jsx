@@ -4,7 +4,7 @@ import Footer from "../Footer/Footer";
 import Loader from "../Loader/Loader";
 import Titles from "../Titles/Titles";
 import classes from "./VideoSlider.module.css";
-import { VideoSliderProvider } from "@/context/hero-context";
+import { VideoSliderProvider } from "@/context/hero-context2";
 
 const VideoSlider = () => {
   return (

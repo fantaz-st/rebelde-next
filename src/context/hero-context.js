@@ -1,39 +1,78 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useRef, useCallback } from "react";
-import gsap from "gsap";
+import React, { createContext, useContext, useState, useRef, useEffect, useCallback } from "react";
 import * as THREE from "three";
+import gsap from "gsap";
+import { Canvas, extend, useThree, useFrame } from "@react-three/fiber";
+import { shaderMaterial, useAspect } from "@react-three/drei";
 import slides from "@/components/Hero/data";
+import { fragmentShader, vertexShader } from "@/components/Hero/shaders";
+// Shader Material
+const ComplexShaderMaterial = shaderMaterial(
+  {
+    uTexture1: new THREE.Texture(),
+    uTexture2: new THREE.Texture(),
+    uOffsetAmount: 3,
+    uColumnsCount: 3.0,
+    uTransitionProgress: 0.0,
+    uAngle: (45 * Math.PI) / 180,
+    uScale: 3,
+    uInputResolution: new THREE.Vector2(1920, 1080),
+    uOutputResolution: new THREE.Vector2(1, 1),
+  },
+  vertexShader,
+  fragmentShader
+);
+extend({ ComplexShaderMaterial });
 
-export const VideoSliderContext = createContext();
+// Context
+const HeroContext = createContext();
 
-// export const useVideoSlider = () => useContext(VideoSliderContext);
+export const useHero = () => useContext(HeroContext);
 
-export const VideoSliderProvider = ({ children }) => {
-  // State
+// Provider
+export const HeroProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
-  const [counter, setCounter] = useState(1); // Counter for current slide
-
-  // Refs
-  const currentIndexRef = useRef(0);
   const texturesRef = useRef([]);
   const progressRef = useRef(0);
-  const isTransitioningRef = useRef(false);
-  const placeholderTextureRef = useRef(null);
+  const currentIndexRef = useRef(0);
   const currentSlideIndex = useRef(0);
+  const isTransitioningRef = useRef(false);
+  const isTransitioning = useRef(false);
+  const counterRef = useRef(null);
+  const [counter, setCounter] = useState(1);
+  const placeholderTextureRef = useRef(null);
+  const textContainerRef = useRef(null);
+  const footerRef = useRef(null);
+  const headerRef = useRef(null);
+  const closeButtonRef = useRef(null);
 
-  // Utility: Dispose old textures
-  const disposeOldTexture = useCallback((oldTexture) => {
-    if (oldTexture instanceof THREE.VideoTexture && oldTexture.image) {
-      oldTexture.image.pause();
-      oldTexture.image.src = "";
-      oldTexture.dispose();
+  const [activeMenu, setActiveMenu] = useState(false);
+
+  const toggleActiveMenu = () => {
+    setActiveMenu((prev) => !prev);
+  };
+
+  const showUI = useCallback(() => {
+    if (footerRef.current && headerRef.current) {
+      gsap.to(headerRef.current, {
+        y: 0,
+        duration: 0.5,
+        ease: "power2.out",
+        delay: 0.5,
+      });
+
+      gsap.to(footerRef.current, {
+        y: 0,
+        duration: 0.5,
+        ease: "power2.out",
+        delay: 0.5,
+      });
     }
   }, []);
 
-  // Utility: Create video texture
-  const createVideoTexture = useCallback((src, onProgress) => {
+  const createVideoTexture = (src, onProgress) => {
     const video = document.createElement("video");
     video.src = src;
     video.crossOrigin = "anonymous";
@@ -60,25 +99,34 @@ export const VideoSliderProvider = ({ children }) => {
 
       video.onerror = () => reject(new Error(`Failed to load video: ${src}`));
     });
-  }, []);
+  };
 
-  // Define updateCounter before goToSlide
-  const updateCounter = useCallback((num) => {
-    const counterElement = document.querySelector(".counter span"); // Update the counter in Footer
-    if (!counterElement) return;
+  const disposeOldTexture = (oldTexture) => {
+    if (oldTexture instanceof THREE.VideoTexture && oldTexture.image) {
+      oldTexture.image.pause();
+      oldTexture.image.src = "";
+      oldTexture.dispose();
+    }
+  };
 
-    // Animate counter out and in
+  const updateCounter = (num) => {
+    const counterEl = counterRef.current;
+
+    // Animate out
     gsap.fromTo(
-      counterElement,
+      counterEl,
       { y: 0 },
       {
         y: -20,
         duration: 0.2,
         ease: "power2.in",
         onComplete: () => {
+          // Update the counter after animating out
           setCounter(num);
+
+          // Animate in
           gsap.fromTo(
-            counterElement,
+            counterEl,
             { y: 20 },
             {
               y: 0,
@@ -89,56 +137,55 @@ export const VideoSliderProvider = ({ children }) => {
         },
       }
     );
+  };
+
+  const goToSlide = useCallback((index) => {
+    // Prevent triggering a new transition if one is already active
+    if (isTransitioning.current) return;
+
+    isTransitioning.current = true; // Set transitioning to true
+
+    const previousSlideIndex = currentSlideIndex.current;
+    currentSlideIndex.current = index;
+
+    animateCaptions(previousSlideIndex, currentSlideIndex.current, () => {
+      isTransitioning.current = false; // Reset transitioning when animation is complete
+    });
+    updateCounter(currentSlideIndex.current + 1);
   }, []);
 
-  // Define goToSlide after updateCounter
-  const goToSlide = useCallback(
-    (index) => {
-      if (isTransitioningRef.current) return;
+  const goToNextSlide = () => {
+    const index = currentSlideIndex.current === slides.length - 1 ? 0 : currentSlideIndex.current + 1;
+    goToSlide(index);
+    changeSlide(1);
+  };
 
-      isTransitioningRef.current = true; // Set transitioning state
-      const prevIndex = currentSlideIndex.current;
-      currentSlideIndex.current = index;
+  const goToPreviousSlide = () => {
+    const index = currentSlideIndex.current === 0 ? slides.length - 1 : currentSlideIndex.current - 1;
+    goToSlide(index);
+    changeSlide(-1);
+  };
 
-      animateCaptions(prevIndex, index, () => {
-        isTransitioning.current = false; // Reset transitioning state
-      });
-
-      updateCounter(index + 1);
-    },
-    [updateCounter]
-  );
-
-  // Define goToNextSlide and goToPreviousSlide after goToSlide
-  const goToNextSlide = useCallback(() => {
-    const nextIndex = (currentSlideIndex.current + 1) % slides.length;
-    goToSlide(nextIndex);
-  }, [goToSlide]);
-
-  const goToPreviousSlide = useCallback(() => {
-    const prevIndex = (currentSlideIndex.current - 1 + slides.length) % slides.length;
-    goToSlide(prevIndex);
-  }, [goToSlide]);
-
-  const animateCaptions = useCallback((prev, next, onComplete) => {
+  const animateCaptions = (prev, next, onComplete) => {
     if (prev === next) {
       onComplete?.();
       return;
     }
     animateOutPreviousCaptions(prev, () => {
-      animateInNextCaption(next, onComplete);
+      animateInNextCaption(next, false, onComplete);
     });
-  }, []);
+  };
 
-  const animateOutPreviousCaptions = useCallback((prev, callback) => {
-    const captions = document.querySelectorAll(".textContainer .title");
-    const caption = captions[prev];
-    if (!caption) {
+  const animateOutPreviousCaptions = (prev, callback) => {
+    const captionEls = textContainerRef.current.querySelectorAll(".title");
+    const captionEl = captionEls[prev];
+    if (!captionEl) {
       callback?.();
       return;
     }
 
-    const spans = caption.querySelectorAll("span");
+    const spans = captionEl.querySelectorAll("p span");
+
     gsap.fromTo(
       spans,
       { yPercent: 0 },
@@ -150,73 +197,33 @@ export const VideoSliderProvider = ({ children }) => {
         onComplete: callback,
       }
     );
-  }, []);
+  };
 
-  const animateInNextCaption = useCallback((next, callback) => {
-    const captions = document.querySelectorAll(".textContainer .title");
-    const caption = captions[next];
-    if (!caption) return;
+  const animateInNextCaption = (next, first = false, onComplete) => {
+    const captionEls = textContainerRef.current.querySelectorAll(".title");
+    const captionEl = captionEls[next];
+    if (!captionEl) return;
 
-    const spans = caption.querySelectorAll("span");
-    console.log(spans + "lol");
+    const spans = captionEl.querySelectorAll("p span");
+
+    captionEl.classList.add("active");
+
+    gsap.killTweensOf(spans);
+
     gsap.fromTo(
       spans,
       { yPercent: 100 },
       {
         yPercent: 0,
-        stagger: 0.05,
+        stagger: 0.1,
+        delay: first ? 0.8 : null,
         duration: 0.5,
         ease: "power2.out",
-        onComplete: callback,
+        onComplete,
       }
     );
-  }, []);
+  };
 
-  // Load initial textures
-  const loadInitialTextures = useCallback(
-    (showUI) => {
-      const img = new Image();
-      img.src = "/transparent-pixel.png";
-      img.onload = () => {
-        const tex = new THREE.Texture(img);
-        tex.needsUpdate = true;
-        placeholderTextureRef.current = tex;
-        texturesRef.current = [tex, tex];
-      };
-
-      const handleProgress = (percent) => {
-        setProgress((prev) => Math.min(100, prev + percent / slides.length));
-      };
-
-      Promise.all(slides.slice(0, 2).map((slide) => createVideoTexture(slide.video, handleProgress)))
-        .then((textures) => {
-          const firstVideo = textures[0];
-          texturesRef.current = [placeholderTextureRef.current, firstVideo];
-          setLoading(false);
-
-          const progressObj = { value: 0 };
-          gsap.to(progressObj, {
-            value: 1,
-            duration: 1,
-            ease: "power2.out",
-            onUpdate: () => {
-              progressRef.current = progressObj.value;
-            },
-            onComplete: () => {
-              disposeOldTexture(placeholderTextureRef.current);
-              texturesRef.current = [firstVideo, firstVideo];
-              progressRef.current = 0;
-              currentIndexRef.current = 0;
-              showUI();
-            },
-          });
-        })
-        .catch((error) => console.error("Error loading video textures:", error));
-    },
-    [createVideoTexture, disposeOldTexture]
-  );
-
-  // Slide transition logic
   const changeSlide = useCallback(
     (direction) => {
       if (isTransitioningRef.current || loading || texturesRef.current.length === 0) return;
@@ -226,69 +233,114 @@ export const VideoSliderProvider = ({ children }) => {
       createVideoTexture(slides[targetIndex].video, () => {}).then((nextVideoTexture) => {
         const oldTexture = texturesRef.current[1];
         texturesRef.current[1] = nextVideoTexture;
-        if (direction === 1 ? goToNextSlide() : goToPreviousSlide())
-          gsap.to(progressRef, {
-            current: 1.0,
-            duration: 1,
-            ease: "power2.out",
-            onUpdate: () => {
-              progressRef.current = gsap.getProperty(progressRef, "current");
-            },
-            onComplete: () => {
-              disposeOldTexture(oldTexture);
-              texturesRef.current = [nextVideoTexture, nextVideoTexture];
-              currentIndexRef.current = targetIndex;
-              progressRef.current = 0.0;
-              isTransitioningRef.current = false;
-            },
-          });
+
+        gsap.to(progressRef, {
+          current: 1.0,
+          duration: 1,
+          ease: "power2.out",
+          onUpdate: () => {
+            progressRef.current = gsap.getProperty(progressRef, "current");
+          },
+          onComplete: () => {
+            disposeOldTexture(oldTexture);
+            texturesRef.current = [nextVideoTexture, nextVideoTexture];
+            currentIndexRef.current = targetIndex;
+            progressRef.current = 0.0;
+            isTransitioningRef.current = false;
+          },
+        });
       });
     },
-    [loading, createVideoTexture, disposeOldTexture]
+    [loading, slides]
   );
 
   useEffect(() => {
-    const showUI = () => {
-      gsap.to(".footer", {
-        y: 0,
-        duration: 0.5,
-        ease: "power2.out",
-        delay: 0.5,
-      });
+    const img = new Image();
+    img.src = "/transparent-pixel.png";
+    img.onload = () => {
+      const tex = new THREE.Texture(img);
+      tex.needsUpdate = true;
+      placeholderTextureRef.current = tex;
+      texturesRef.current = [tex, tex];
     };
-    loadInitialTextures(showUI);
-  }, [loadInitialTextures]);
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const handleProgress = (percent) => {
+      setProgress((prev) => Math.min(100, prev + percent / slides.length));
+    };
+
+    Promise.all(slides.slice(0, 2).map((slide) => createVideoTexture(slide.video, handleProgress)))
+      .then((textures) => {
+        if (isMounted && textures.length > 0) {
+          const firstVideo = textures[0];
+          texturesRef.current = [placeholderTextureRef.current, firstVideo];
+          setLoading(false);
+
+          const progressObj = { value: 0 };
+          gsap.to(progressObj, {
+            value: 1,
+            duration: 1,
+            ease: "power2.out",
+            onStart: () => {},
+            onUpdate: () => {
+              progressRef.current = progressObj.value;
+            },
+            onComplete: () => {
+              animateInNextCaption(0, false, () => {
+                isTransitioning.current = false; // Allow transitions after the initial animation
+              });
+              disposeOldTexture(placeholderTextureRef.current);
+              texturesRef.current = [firstVideo, firstVideo];
+              progressRef.current = 0;
+              currentIndexRef.current = 0;
+              showUI();
+            },
+          });
+        }
+      })
+      /*  .then(() => {
+        animateInNextCaption(0, true, () => {
+          isTransitioning.current = false; // Allow transitions after the initial animation
+        });
+      }) */
+      .catch((error) => console.error("Error loading video textures:", error));
+
+    return () => {
+      isMounted = false;
+    };
+  }, [showUI]);
 
   return (
-    <VideoSliderContext.Provider
+    <HeroContext.Provider
       value={{
         loading,
+        setLoading,
         progress,
-        currentIndexRef,
+        setProgress,
         texturesRef,
         progressRef,
-        isTransitioningRef,
+        currentIndexRef,
+        currentSlideIndex,
+        isTransitioning,
         counter,
+        setCounter,
+        counterRef,
+        createVideoTexture,
+        textContainerRef,
+        footerRef,
+        headerRef,
+        goToPreviousSlide,
+        goToNextSlide,
+        toggleActiveMenu,
+        setActiveMenu,
+        activeMenu,
+        goToSlide,
         changeSlide,
-        loadInitialTextures,
-        animateInNextCaption,
       }}
     >
       {children}
-    </VideoSliderContext.Provider>
+    </HeroContext.Provider>
   );
 };
-
-/*   useGSAP(() => {
-     if (loading) return;
-
-    const handleWheel = (event) => {
-      if (isTransitioningRef.current) return;
-      clearTimeout(scrollTimeout.current);
-      scrollTimeout.current = setTimeout(() => {
-        changeSlide(event.deltaY > 0 ? 1 : -1);
-      }, 300);
-    };
-
-    containerRef.current.addEventListener("wheel", handleWheel);
-  }, [loading, containerRef, changeSlide]); */

@@ -1,45 +1,44 @@
-.content {
-  padding: 0 2rem;
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  padding-left: 2rem;
+  box-sizing: border-box;
+}
+
+.textContainer {
   height: 100%;
-  width: calc(33.333% - 4rem);
-  position: absolute;
-  top: 0;
+  width: 33.333%;
+  position: relative;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: center;
   align-items: stretch;
   align-content: center;
-  color: #fff;
-  z-index: 2;
 }
 
-.text {
-  position: relative;
-}
 .title span {
   display: inline-block;
 }
 
 .title p {
   overflow: hidden;
-  padding: 0;
-  margin: 0;
 }
 
 .title {
   position: absolute;
   overflow: hidden;
   /* line-height: 1; */
-  top: 50%;
-  transform: translateY(-50%);
+  /* top: 50%;
+    transform: translateY(-50%); */
   font-weight: 700;
   font-size: 6rem;
   /* opacity: 0; */
   visibility: hidden; /* Hidden but still part of the layout */
   pointer-events: none;
   margin: 0;
-  text-shadow: 2px 3px 5px rgba(0, 0, 0, 0.5);
+  color: red;
 }
 
 .title.active {
@@ -52,20 +51,21 @@
   overflow: hidden;
   margin-bottom: -15px; /* Using margin bottom to tighten lines instead of line height, because line-height doesn't play well with overflow hidden and it will clip descendings of letters*/
 }
+.controls {
+  position: absolute;
+  bottom: 5%;
+}
 
-@media screen and (max-width: 640px) {
-  .content {
-    width: calc(100% - 2rem);
-    padding: 0 1rem;
-  }
+.button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 0 10px;
+  cursor: pointer;
+}
 
-  .titleContainer {
-    width: 100%;
-    max-width: 100%;
-    padding: 0 1rem;
-  }
-
-  .title {
-    font-size: 3.25rem;
-  }
+.counter {
+  overflow: hidden;
+}
+.counter span {
+  display: inline-block;
 }

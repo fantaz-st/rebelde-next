@@ -1,11 +1,16 @@
-import { useContext } from "react";
+import { useHero } from "@/context/hero-context";
 import classes from "./Loader.module.css";
-import { VideoSliderContext } from "@/context/hero-context";
 
 const Loader = () => {
-  const ctx = useContext(VideoSliderContext);
-  const { loading, progress } = ctx;
-  return <div className={classes.container}>{loading && <div className={classes.loader}>Loading... {Math.round(progress)}%</div>}</div>;
+  const { loading, progress } = useHero();
+
+  if (!loading) return null;
+
+  return (
+    <div className={classes.loader}>
+      <h2>Loading... {Math.round(progress)}%</h2>
+    </div>
+  );
 };
 
 export default Loader;

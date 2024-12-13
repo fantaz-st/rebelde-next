@@ -9,3 +9,8 @@ body {
   line-height: 1;
   overflow: hidden !important;
 }
+.active {
+  visibility: visible !important;
+  opacity: 1; /* Fully visible when active */
+  pointer-events: all;
+}

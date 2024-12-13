@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import classes from "./Footer.module.css";
-import { VideoSliderContext } from "@/context/hero-context";
+import { VideoSliderContext } from "@/context/hero-context2";
 import slides from "../data";
 
 const Footer = () => {
