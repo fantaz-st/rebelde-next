@@ -7,7 +7,7 @@ import SliderMenu from "@/components/SliderMenu/SliderMenu";
 import { SliderContextProvider } from "@/context/slider-context";
 import Loading from "@/components/Loading/Loading";
 import Marquee from "@/components/Marquee/Marquee";
-import VideoSlider from "@/components/VideoSlider/VideoSlider";
+import VideoSlider from "@/components/VideoSlider2/VideoSlider";
 import Fuck from "@/components/Fuck/Fuck";
 
 export default function Home() {

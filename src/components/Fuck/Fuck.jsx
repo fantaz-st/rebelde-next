@@ -1,16 +1,13 @@
 "use client";
 
+import * as THREE from "three";
 import React, { useRef, useEffect, useCallback, useState } from "react";
+import gsap from "gsap";
+import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
+import { shaderMaterial, useAspect } from "@react-three/drei";
+import { fragmentShader, vertexShader } from "./shaders";
 import classes from "./Fuck.module.css";
 import slides from "./data";
-
-import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
-import * as THREE from "three";
-import { shaderMaterial, useAspect } from "@react-three/drei";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { fragmentShader, vertexShader } from "./shaders";
-gsap.registerPlugin(useGSAP);
 
 const ComplexShaderMaterial = shaderMaterial(
   {
@@ -77,7 +74,6 @@ const Fuck = () => {
   const footerRef = useRef(null);
 
   const showUI = useCallback(() => {
-    // Footer animation
     if (footerRef.current) {
       gsap.to(footerRef.current, {
         y: 0,
@@ -282,9 +278,6 @@ const Fuck = () => {
   }, []);
 
   useEffect(() => {
-    animateInNextCaption(0, true, () => {
-      isTransitioning.current = false; // Allow transitions after the initial animation
-    });
     let isMounted = true;
     const handleProgress = (percent) => {
       setProgress((prev) => Math.min(100, prev + percent / slides.length));
@@ -302,10 +295,14 @@ const Fuck = () => {
             value: 1,
             duration: 1,
             ease: "power2.out",
+            onStart: () => {},
             onUpdate: () => {
               progressRef.current = progressObj.value;
             },
             onComplete: () => {
+              animateInNextCaption(0, false, () => {
+                isTransitioning.current = false; // Allow transitions after the initial animation
+              });
               disposeOldTexture(placeholderTextureRef.current);
               texturesRef.current = [firstVideo, firstVideo];
               progressRef.current = 0;
@@ -315,6 +312,11 @@ const Fuck = () => {
           });
         }
       })
+      /*  .then(() => {
+        animateInNextCaption(0, true, () => {
+          isTransitioning.current = false; // Allow transitions after the initial animation
+        });
+      }) */
       .catch((error) => console.error("Error loading video textures:", error));
 
     return () => {
@@ -324,42 +326,51 @@ const Fuck = () => {
 
   return (
     <div className={classes.container}>
-      {/* {loading ? (
-        <div className={classes.loader}>Loading... {Math.round(progress)}%</div>
-      ) : (
-        <> */}
-      <div className={classes.content} ref={textContainerRef}>
-        {slides.map((slide, i) => (
-          <div key={slide.id} className={classes.title}>
-            {slide.title.map((titl, j) => (
-              <p key={slide.id + j}>
-                <span>{titl}</span>
-              </p>
-            ))}
-          </div>
-        ))}
-
-        <div className={classes.footer}>
-          <p className={classes.counter}>
-            0<span ref={counterRef}>{counter}</span> | 0{slides.length}
-          </p>
-          <div className={classes.controls}>
-            <div className={classes.control} onClick={goToPreviousSlide}>
-              {"<"}
-            </div>
-            <div className={classes.control} onClick={goToNextSlide}>
-              {">"}
-            </div>
-          </div>
+      {loading ? (
+        <div className={classes.loader}>
+          <h2>Loading... {Math.round(progress)}%</h2>
         </div>
-      </div>
-      <Canvas camera={{ position: [0, 0, 2], fov: 100 }}>
-        <ShaderPlane texturesRef={texturesRef} progressRef={progressRef} />
-      </Canvas>
+      ) : (
+        <>
+          <div className={classes.content} ref={textContainerRef}>
+            {slides.map((slide, i) => (
+              <div key={slide.id} className={classes.title}>
+                {slide.title.map((titl, j) => (
+                  <p key={slide.id + j}>
+                    <span>{titl}</span>
+                  </p>
+                ))}
+              </div>
+            ))}
+
+            <div className={classes.footer} ref={footerRef}>
+              <div className={classes.counter}>
+                <span className={classes.index} ref={counterRef}>
+                  0{counter}
+                </span>
+                <span className={classes.total}>0{slides.length}</span>
+              </div>
+              <div className={classes.controls}>
+                <div className={classes.control} onClick={goToPreviousSlide}>
+                  <svg viewBox='0 0 25 25' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path d='M14.5 17L10 12.5L14.5 8' stroke='#fff' strokeWidth='1.2' />
+                  </svg>
+                </div>
+                <div className={classes.control} onClick={goToNextSlide}>
+                  <svg viewBox='0 0 25 25' fill='none' xmlns='http://www.w3.org/2000/svg'>
+                    <path d='M10.5 8L15 12.5L10.5 17' stroke='#fff' strokeWidth='1.2' />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          <Canvas camera={{ position: [0, 0, 2], fov: 100 }}>
+            <ShaderPlane texturesRef={texturesRef} progressRef={progressRef} />
+          </Canvas>
+        </>
+      )}
       <div className={classes.line33} />
       <div className={classes.line66} />
-      {/*  </>
-      )} */}
     </div>
   );
 };
