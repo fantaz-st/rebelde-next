@@ -3,8 +3,8 @@
 import React, { createContext, useContext, useState, useRef, useEffect, useCallback } from "react";
 import * as THREE from "three";
 import gsap from "gsap";
-import { Canvas, extend, useThree, useFrame } from "@react-three/fiber";
-import { shaderMaterial, useAspect } from "@react-three/drei";
+import { extend } from "@react-three/fiber";
+import { shaderMaterial } from "@react-three/drei";
 import slides from "@/components/Hero/data";
 import { fragmentShader, vertexShader } from "@/components/Hero/shaders";
 // Shader Material
