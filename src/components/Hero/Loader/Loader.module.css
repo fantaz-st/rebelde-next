@@ -1,0 +1,17 @@
+.loader h2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+  z-index: 4;
+  color: #000;
+}
+
+@media screen and (max-width: 640px) {
+  .loader h2 {
+    width: 100%;
+    text-align: center;
+  }
+}

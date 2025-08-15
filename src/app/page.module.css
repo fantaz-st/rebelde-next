@@ -1,0 +1,49 @@
+.app {
+  position: relative;
+  height: 100dvh; /* Use dynamic viewport height */
+  min-height: 100svh; /* Ensure it adapts to small viewport */
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.loading h2 {
+  width: 50%;
+}
+
+.line33,
+.line66 {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 33.33333%;
+  /* background-color: #fff; */
+  width: 0px;
+  height: 100%;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.line66 {
+  left: 66.66666%;
+}
+
+@media screen and (max-width: 640px) {
+  .line33,
+  .line66 {
+    display: none;
+  }
+
+  .loading h2 {
+    width: 100%;
+    text-align: center;
+  }
+}
