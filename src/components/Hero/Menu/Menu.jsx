@@ -7,10 +7,10 @@ const Menu = () => {
   const { activeMenu, toggleActiveMenu, goToSlide, isTransitioning } = useHero();
 
   const handleClick = (index) => {
-    if (isTransitioning.current) return; // optional guard
+    if (isTransitioning.current) return;
     toggleActiveMenu();
     setTimeout(() => {
-      goToSlide(index); // captions + shader handled together
+      goToSlide(index);
     }, 600);
   };
 

@@ -329,11 +329,9 @@ export const HeroProvider = ({ children }) => {
           },
         });
 
-        // Preload slide 2 in background if exists and not cached
         const preloadNext = 2 % slides.length;
         if (!cache.current.has(preloadNext)) ensureTexture(preloadNext);
       } catch {
-        // If anything fails, still fail-safe to showing first slide once playable
         try {
           await v0.play();
           const tex0 = new THREE.VideoTexture(v0);
